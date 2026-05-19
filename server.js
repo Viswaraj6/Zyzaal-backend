@@ -291,28 +291,6 @@ app.post("/order", async(req,res)=>{
   }
 
 });
-    // ✅ SAVE ORDER
-    const order = new Order(orderData);
-
-    await order.save();
-
-    res.json({
-      success:true,
-      message:"Order placed ✅"
-    });
-
-  } catch(err){
-
-    console.log(err);
-
-    res.status(500).json({
-      success:false,
-      error:"Order failed ❌"
-    });
-
-  }
-
-});
 app.get("/orders", async (req, res) => {
   const data = await Order.find().sort({ createdAt: -1 });
   res.json(data);
