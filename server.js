@@ -228,65 +228,69 @@ app.post("/verify-payment", async (req, res) => {
 
 /* ================= ORDERS ================= */
 
-app.post("/order", async (req, res) => {
+app.post("/order", async(req,res)=>{
 
-  try {
+  try{
 
-    const orderData = req.body;
+    const products = req.body.products;
 
-    // 🔥 CHECK + REDUCE STOCK
-    for(const item of orderData.products){
+    const order =
+      new Order(req.body);
+
+    await order.save();
+
+    // 🔥 INGA paste pannu
+    for(const item of products){
 
       const product =
         await Product.findById(item._id);
 
-      if(!product){
+      if(!product) continue;
 
-        return res.status(404).json({
-          success:false,
-          message:"Product not found ❌"
-        });
-      }
-
-      // 🔥 SIZE STOCK
-      const sizeObj =
-        product.sizeStock.find(
-          s => s.size === item.size
+      product.stock =
+        Math.max(
+          0,
+          (product.stock || 0) - (item.qty || 1)
         );
 
-      // ❌ OUT OF STOCK
-      if(sizeObj && sizeObj.stock < item.qty){
+      if(product.sizeStock && item.size){
 
-        return res.status(400).json({
-          success:false,
-          message:
-            `${product.name} (${item.size}) out of stock ❌`
-        });
-      }
+        const sizeObj =
+          product.sizeStock.find(
+            s => s.size === item.size
+          );
 
-      // 🔥 TOTAL STOCK CHECK
-      if(product.stock < item.qty){
+        if(sizeObj){
 
-        return res.status(400).json({
-          success:false,
-          message:
-            `${product.name} stock not available ❌`
-        });
-      }
+          sizeObj.stock =
+            Math.max(
+              0,
+              (sizeObj.stock || 0) - (item.qty || 1)
+            );
 
-      // 🔥 REDUCE TOTAL
-      product.stock -= item.qty;
-
-      // 🔥 REDUCE SIZE
-      if(sizeObj){
-
-        sizeObj.stock -= item.qty;
+        }
 
       }
 
       await product.save();
+
     }
 
+    res.json({
+      success:true
+    });
+
+  }catch(err){
+
+    console.log(err);
+
+    res.status(500).json({
+      message:"Order failed"
+    });
+
+  }
+
+});
     // ✅ SAVE ORDER
     const order = new Order(orderData);
 
