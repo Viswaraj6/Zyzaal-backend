@@ -229,17 +229,86 @@ app.post("/verify-payment", async (req, res) => {
 /* ================= ORDERS ================= */
 
 app.post("/order", async (req, res) => {
+
   try {
-    const order = new Order(req.body);
+
+    const orderData = req.body;
+
+    // 🔥 CHECK + REDUCE STOCK
+    for(const item of orderData.products){
+
+      const product =
+        await Product.findById(item._id);
+
+      if(!product){
+
+        return res.status(404).json({
+          success:false,
+          message:"Product not found ❌"
+        });
+      }
+
+      // 🔥 SIZE STOCK
+      const sizeObj =
+        product.sizeStock.find(
+          s => s.size === item.size
+        );
+
+      // ❌ OUT OF STOCK
+      if(sizeObj && sizeObj.stock < item.qty){
+
+        return res.status(400).json({
+          success:false,
+          message:
+            `${product.name} (${item.size}) out of stock ❌`
+        });
+      }
+
+      // 🔥 TOTAL STOCK CHECK
+      if(product.stock < item.qty){
+
+        return res.status(400).json({
+          success:false,
+          message:
+            `${product.name} stock not available ❌`
+        });
+      }
+
+      // 🔥 REDUCE TOTAL
+      product.stock -= item.qty;
+
+      // 🔥 REDUCE SIZE
+      if(sizeObj){
+
+        sizeObj.stock -= item.qty;
+
+      }
+
+      await product.save();
+    }
+
+    // ✅ SAVE ORDER
+    const order = new Order(orderData);
+
     await order.save();
 
-    res.json({ success: true });
+    res.json({
+      success:true,
+      message:"Order placed ✅"
+    });
 
-  } catch {
-    res.status(500).json({ error: "Order failed ❌" });
+  } catch(err){
+
+    console.log(err);
+
+    res.status(500).json({
+      success:false,
+      error:"Order failed ❌"
+    });
+
   }
-});
 
+});
 app.get("/orders", async (req, res) => {
   const data = await Order.find().sort({ createdAt: -1 });
   res.json(data);
