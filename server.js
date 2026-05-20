@@ -83,7 +83,10 @@ const Product = mongoose.model("Product", {
 
   // 🔥 OTHER
   sizes: [String],
-  sizeStock: Array,
+ sizeStock: [{
+  size: String,
+  stock: Number
+}],
   category: String
 });
 /* 🎬 GLOBAL VIDEO */
