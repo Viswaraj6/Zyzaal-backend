@@ -291,7 +291,7 @@ app.post("/order", async(req,res)=>{
               0,
               (sizeObj.stock || 0) - (item.qty || 1)
             );
-
+           product.markModified("sizeStock");
         }
 
       }
