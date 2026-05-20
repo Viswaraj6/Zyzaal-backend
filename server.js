@@ -64,6 +64,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 /* 📦 PRODUCT */
 const Product = mongoose.model("Product", {
   name: String,
+  styleNo: String,
   price: Number,
   stock: Number,
 
