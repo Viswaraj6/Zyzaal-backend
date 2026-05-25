@@ -193,16 +193,74 @@ app.put("/products/:id", checkAdmin, async(req,res)=>{
 
   try{
 
-    const updated =
-      await Product.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new:true }
-      );
+    const product =
+      await Product.findById(req.params.id);
 
-    res.json(updated);
+    if(!product){
+
+      return res.status(404).json({
+        message:"Product not found"
+      });
+
+    }
+
+    product.name =
+      req.body.name || product.name;
+
+    product.styleNo =
+      req.body.styleNo || product.styleNo;
+
+    product.category =
+      req.body.category || product.category;
+
+    product.color =
+      req.body.color || product.color;
+
+    product.fabric =
+      req.body.fabric || product.fabric;
+
+    product.fit =
+      req.body.fit || product.fit;
+
+    product.pattern =
+      req.body.pattern || product.pattern;
+
+    product.occasion =
+      req.body.occasion || product.occasion;
+
+    product.price =
+      req.body.price || product.price;
+
+    product.images =
+      req.body.images || product.images;
+
+    product.primaryImage =
+      req.body.primaryImage || product.primaryImage;
+
+    // 🔥 SIZE STOCK
+    if(req.body.sizeStock){
+
+      product.sizeStock =
+        req.body.sizeStock;
+
+      product.markModified("sizeStock");
+
+    }
+
+    // 🔥 TOTAL STOCK
+    product.stock =
+      req.body.stock || 0;
+
+    await product.save();
+
+    res.json({
+      success:true,
+      product
+    });
 
   }catch(err){
+
+    console.log(err);
 
     res.status(500).json({
       message:"Update failed"
