@@ -94,6 +94,7 @@ const Video = mongoose.model("Video", {
   url: String
 });
 const OrderSchema = new mongoose.Schema({
+   orderNumber: String,
   user: String,
   name: String,
   phone: String,
