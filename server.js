@@ -229,6 +229,16 @@ app.post("/register", async (req, res) => {
   }
 
 });
+app.get("/user/:phone", async (req,res)=>{
+
+ const user =
+ await User.findOne({
+   phone:req.params.phone
+ });
+
+ res.json(user);
+
+});
 app.get("/products", async (req, res) => {
   try {
 
