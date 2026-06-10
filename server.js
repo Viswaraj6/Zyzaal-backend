@@ -512,8 +512,7 @@ app.get("/customers", async (req,res)=>{
   }
 
 });
-app.put(
-"/deactivate-user/:phone",
+app.put("/deactivate-user/:phone",
 async (req,res)=>{
 
 await User.updateOne(
@@ -521,7 +520,7 @@ await User.updateOne(
 phone:req.params.phone
 },
 {
-active:false
+status:"Deactivated"
 }
 );
 
@@ -530,13 +529,17 @@ success:true
 });
 
 });
-app.delete(
-"/delete-user/:phone",
+app.delete("/delete-user/:phone",
 async (req,res)=>{
 
-await User.deleteOne({
-phone:req.params.phone
-});
+await User.updateOne(
+{
+ phone:req.params.phone
+},
+{
+ status:"Deleted"
+}
+);
 
 res.json({
 success:true
