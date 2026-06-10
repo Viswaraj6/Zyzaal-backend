@@ -140,6 +140,44 @@ async(req,res)=>{
   });
 
 });
+app.get(
+"/reactivation-requests",
+async(req,res)=>{
+
+ const data =
+ await ReactivationRequest.find()
+ .sort({createdAt:-1});
+
+ res.json(data);
+
+});
+app.put(
+"/approve-request/:id",
+async(req,res)=>{
+
+ const request =
+ await ReactivationRequest.findById(
+ req.params.id
+ );
+
+ await User.updateOne(
+ {
+  phone:request.phone
+ },
+ {
+  status:"Active"
+ }
+ );
+
+ request.status = "Approved";
+
+ await request.save();
+
+ res.json({
+  success:true
+ });
+
+});
 /* 🎬 GLOBAL VIDEO */
 const Video = mongoose.model("Video", {
   url: String
