@@ -96,7 +96,7 @@ const User = mongoose.model("User", {
     type: String,
     unique: true
   },
-
+gender:String,
   status:{
     type:String,
     default:"Active"
