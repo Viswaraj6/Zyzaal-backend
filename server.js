@@ -487,6 +487,24 @@ app.post("/order", async(req,res)=>{
   }
 
 });
+app.get("/customers", async (req,res)=>{
+
+  try{
+
+    const users = await User.find()
+      .sort({ createdAt:-1 });
+
+    res.json(users);
+
+  }catch(err){
+
+    res.status(500).json({
+      message:"Failed"
+    });
+
+  }
+
+});
 app.get("/orders", async (req, res) => {
   const data = await Order.find().sort({ createdAt: -1 });
   res.json(data);
