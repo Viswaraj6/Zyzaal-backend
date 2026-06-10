@@ -334,15 +334,25 @@ app.put("/user/:phone", async(req,res)=>{
 
 try{
 
+const updateData = {};
+
+if(req.body.name !== undefined)
+updateData.name = req.body.name;
+
+if(req.body.email !== undefined)
+updateData.email = req.body.email;
+
+if(req.body.gender !== undefined)
+updateData.gender = req.body.gender;
+
+if(req.body.address !== undefined)
+updateData.address = req.body.address;
+
 await User.updateOne(
 {
  phone:req.params.phone
 },
-{
- name:req.body.name,
- email:req.body.email,
- gender:req.body.gender
-}
+updateData
 );
 
 res.json({
