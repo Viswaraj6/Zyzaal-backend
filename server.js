@@ -178,6 +178,57 @@ app.post("/add-product", checkAdmin, async (req, res) => {
     });
   }
 });
+app.post("/check-user", async (req, res) => {
+
+  const { phone } = req.body;
+
+  const user = await User.findOne({ phone });
+
+  if(user){
+    return res.json({
+      exists: true,
+      user
+    });
+  }
+
+  res.json({
+    exists: false
+  });
+
+});
+app.post("/register", async (req, res) => {
+
+  try{
+
+    const existing =
+      await User.findOne({
+        phone: req.body.phone
+      });
+
+    if(existing){
+      return res.status(400).json({
+        message:"User already exists"
+      });
+    }
+
+    const user =
+      new User(req.body);
+
+    await user.save();
+
+    res.json({
+      success:true
+    });
+
+  }catch(err){
+
+    res.status(500).json({
+      success:false
+    });
+
+  }
+
+});
 app.get("/products", async (req, res) => {
   try {
 
