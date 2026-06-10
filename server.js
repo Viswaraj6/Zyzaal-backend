@@ -505,6 +505,38 @@ app.get("/customers", async (req,res)=>{
   }
 
 });
+app.put(
+"/deactivate-user/:phone",
+async (req,res)=>{
+
+await User.updateOne(
+{
+phone:req.params.phone
+},
+{
+active:false
+}
+);
+
+res.json({
+success:true
+});
+
+});
+app.delete(
+"/delete-user/:phone",
+async (req,res)=>{
+
+await User.deleteOne({
+phone:req.params.phone
+});
+
+res.json({
+success:true
+});
+
+});
+
 app.get("/orders", async (req, res) => {
   const data = await Order.find().sort({ createdAt: -1 });
   res.json(data);
