@@ -92,6 +92,7 @@ const Product = mongoose.model("Product", {
 const User = mongoose.model("User", {
   name: String,
   email: String,
+  address:String,
   phone: {
     type: String,
     unique: true
