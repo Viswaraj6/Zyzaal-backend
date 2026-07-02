@@ -1,8 +1,5 @@
 const axios = require("axios");
 const { getAccessToken } = require("./zoho");
-const mongoose = require("mongoose");
-
-const Product = mongoose.model("Product");
 
 async function syncItems() {
 
@@ -20,29 +17,34 @@ async function syncItems() {
         }
     );
 
+    const Product = global.Product;
+
     for (const item of res.data.items) {
 
         await Product.findOneAndUpdate(
+
             { styleNo: item.sku },
 
             {
                 name: item.name,
                 styleNo: item.sku,
-                price: item.rate || 0,
-                stock: item.stock_on_hand || 0,
-                category: "",
-                color: "",
-                images: [],
-                primaryImage: ""
+                price: Number(item.rate || 0),
+                stock: Number(item.stock_on_hand || 0)
             },
 
-            { upsert: true, new: true }
+            {
+                upsert: true,
+                new: true
+            }
+
         );
 
     }
 
-    console.log("Sync Completed:", res.data.items.length);
+    console.log("Synced:", res.data.items.length);
 
 }
 
-module.exports = { syncItems };
+module.exports = {
+    syncItems
+};
