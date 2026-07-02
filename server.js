@@ -788,6 +788,13 @@ app.get("/sync-zakya", async(req,res)=>{
     }
 
 });
+cron.schedule("*/5 * * * *", async()=>{
+
+    console.log("Sync Started");
+
+    await syncItems();
+
+});
 /* ================= START ================= */
 server.listen(process.env.PORT || 5000, () => {
   console.log("Server running 🚀");
