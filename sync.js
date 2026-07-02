@@ -21,8 +21,22 @@ async function syncItems() {
     const Product = global.Product;
 
     for (const item of res.data.items) {
-     console.log(item);
-break;
+     // TEST ONLY
+    const locationRes = await axios.get(
+        `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
+        {
+            params: {
+                organization_id: process.env.ZOHO_ORGANIZATION_ID
+            },
+            headers: {
+                Authorization: `Zoho-oauthtoken ${token}`
+            }
+        }
+    );
+
+    console.log(locationRes.data);
+
+    break;   // முதல் item மட்டும் test செய்ய
         const sku = item.sku;
 
         // Last digit = Size
