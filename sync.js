@@ -1,13 +1,4 @@
-console.log({
-    name: item.name,
-    sku: item.sku,
-    category: item.category_name,
-    stock_on_hand: item.stock_on_hand,
-    quantity_available_for_sale: item.quantity_available_for_sale,
-    custom_fields: item.custom_fields
-});
 
-break;
 const axios = require("axios");
 const { getAccessToken } = require("./zoho");
 
@@ -30,7 +21,8 @@ async function syncItems() {
     const Product = global.Product;
 
     for (const item of res.data.items) {
-
+         console.log(JSON.stringify(item, null, 2));
+    break;  
         const sku = item.sku;
 
         // Last digit = Size
