@@ -105,6 +105,8 @@ const Product = mongoose.model("Product", {
 }],
   category: String
 });
+global.Product = Product;
+
 const User = mongoose.model("User", {
   name: String,
   email: String,
