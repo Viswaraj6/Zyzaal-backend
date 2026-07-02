@@ -21,8 +21,14 @@ async function syncItems() {
     const Product = global.Product;
 
     for (const item of res.data.items) {
-         console.log(JSON.stringify(item, null, 2));
-    break;  
+        console.log({
+    item: item.item_name,
+    size: item.cf_size,
+    saleQty: item.quantity_available_for_sale,
+    stock: item.stock_on_hand
+});
+
+break;  
         const sku = item.sku;
 
         // Last digit = Size
