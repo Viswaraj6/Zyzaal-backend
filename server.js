@@ -769,6 +769,25 @@ app.delete("/orders/:id", checkAdmin, async (req, res) => {
     });
   }
 });
+app.get("/sync-zakya", async(req,res)=>{
+
+    try{
+
+        await syncItems();
+
+        res.json({
+            success:true
+        });
+
+    }catch(err){
+
+        console.log(err.response?.data);
+
+        res.status(500).json(err.response?.data);
+
+    }
+
+});
 /* ================= START ================= */
 server.listen(process.env.PORT || 5000, () => {
   console.log("Server running 🚀");
