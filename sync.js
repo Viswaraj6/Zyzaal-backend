@@ -91,8 +91,7 @@ if (
         if (index >= 0) {
 
             product.sizeStock[index].stock =
-                Number(item.stock_on_hand || 0);
-
+    Number(item.quantity_available_for_sale || 0);
         } else {
 
            product.sizeStock.push({
