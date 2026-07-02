@@ -82,14 +82,12 @@ async function syncItems() {
 
         } else {
 
-            product.sizeStock.push({
-
-                size,
-
-                stock: Number(item.stock_on_hand || 0)
-
-            });
-
+           product.sizeStock.push({
+    size,
+    stock: Number(item.stock_on_hand || 0),
+    sku: item.sku
+});
+            
         }
 
         product.stock =
