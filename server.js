@@ -98,10 +98,10 @@ const Product = mongoose.model("Product", {
   description: String,
 
   // 🔥 OTHER
-  sizes: [String],
  sizeStock: [{
   size: String,
-  stock: Number
+  stock: Number,
+  sku: String
 }],
   category: String
 });
