@@ -19,7 +19,8 @@ async function syncItems() {
     );
 
     const Product = global.Product;
-
+console.log("TOTAL ITEMS:", res.data.items.length);
+console.log("Starting Loop...");
    for (const item of res.data.items) {
 
     console.log("Checking Item:", item.item_id, item.sku);
