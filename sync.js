@@ -42,7 +42,7 @@ async function syncItems() {
 
         locations = locationRes.data.item_location_details.locations;
 
-        console.log("SUCCESS:", item.sku);
+      console.log("SUCCESS:", item.item_id, item.sku);
 
     } 
     catch (err) {
