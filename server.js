@@ -103,6 +103,10 @@ const Product = mongoose.model("Product", {
   stock: Number,
   sku: String
 }],
+  locationStock: [{
+  location: String,
+  stock: Number
+}],
   category: String
 });
 global.Product = Product;
