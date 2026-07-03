@@ -44,13 +44,19 @@ async function syncItems() {
 
         console.log("SUCCESS:", item.sku);
 
-    } catch (err) {
+    } 
+    catch (err) {
 
-        console.log("FAILED ITEM:", item.item_id, item.sku);
-        console.log(err.response?.data);
+    console.log("==========================");
+    console.log("FAILED ITEM");
+    console.log("Item ID :", item.item_id);
+    console.log("SKU     :", item.sku);
+    console.log("Status  :", err.response?.status);
+    console.log("Response:", JSON.stringify(err.response?.data, null, 2));
+    console.log("==========================");
 
-        continue;
-    }
+    continue;
+}
 
     const sku = item.sku;
 
