@@ -28,7 +28,10 @@ console.log("Starting Loop...");
     let locations = [];
 
     try {
-
+       console.log("================================");
+console.log("TOKEN:", token);
+console.log("ORG:", process.env.ZOHO_ORGANIZATION_ID);
+console.log("ITEM:", item.item_id, item.sku);
         const locationRes = await axios.get(
             `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
             {
