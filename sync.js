@@ -33,10 +33,9 @@ async function syncItems() {
             }
         }
     );
-
-    console.log(locationRes.data);
-
-    break;   // முதல் item மட்டும் test செய்ய
+const locations = locationRes.data.item_location_details.locations;
+   
+        // முதல் item மட்டும் test செய்ய
         const sku = item.sku;
 
         // Last digit = Size
