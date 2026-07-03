@@ -5,7 +5,10 @@ const { getAccessToken } = require("./zoho");
 async function syncItems() {
 console.log("========== NEW SYNC.JS ==========");
     const token = await getAccessToken();
-
+    
+console.log("TOKEN:", token);
+console.log("ORG:", process.env.ZOHO_ORGANIZATION_ID);
+    
     const res = await axios.get(
         "https://www.zohoapis.in/inventory/v1/items",
         {
