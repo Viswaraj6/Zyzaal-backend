@@ -49,14 +49,22 @@ console.log("ITEM:", item.item_id, item.sku);
       console.log("SUCCESS:", item.item_id, item.sku);
 
     } 
-    catch (err) {
+  catch (err) {
 
     console.log("==========================");
     console.log("FAILED ITEM");
     console.log("Item ID :", item.item_id);
     console.log("SKU     :", item.sku);
+
     console.log("Status  :", err.response?.status);
-    console.log("Response:", JSON.stringify(err.response?.data, null, 2));
+
+    console.log("Headers :", err.response?.headers);
+
+    console.log(
+        "Response:",
+        JSON.stringify(err.response?.data, null, 2)
+    );
+
     console.log("==========================");
 
     continue;
