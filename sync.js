@@ -20,24 +20,41 @@ async function syncItems() {
 
     const Product = global.Product;
 
-    for (const item of res.data.items) {
-     // TEST ONLY
-    const locationRes = await axios.get(
-        `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
-        {
-            params: {
-                organization_id: process.env.ZOHO_ORGANIZATION_ID
-            },
-            headers: {
-                Authorization: `Zoho-oauthtoken ${token}`
-            }
-        }
-    );
-const locations = locationRes.data.item_location_details.locations;
-   
-        // முதல் item மட்டும் test செய்ய
-        const sku = item.sku;
+   for (const item of res.data.items) {
 
+    console.log("Checking Item:", item.item_id, item.sku);
+
+    let locations = [];
+
+    try {
+
+        const locationRes = await axios.get(
+            `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
+            {
+                params: {
+                    organization_id: process.env.ZOHO_ORGANIZATION_ID
+                },
+                headers: {
+                    Authorization: `Zoho-oauthtoken ${token}`
+                }
+            }
+        );
+
+        locations = locationRes.data.item_location_details.locations;
+
+        console.log("SUCCESS:", item.sku);
+
+    } catch (err) {
+
+        console.log("FAILED ITEM:", item.item_id, item.sku);
+        console.log(err.response?.data);
+
+        continue;
+    }
+
+    const sku = item.sku;
+
+    // 👇 இதற்கு கீழே உன் பழைய code அதே மாதிரி இருக்கட்டும்
         // Last digit = Size
         const sizeDigit = sku.slice(-1);
 
