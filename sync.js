@@ -197,25 +197,19 @@ product.sizeStock.push({
                 (a,b)=>a+b.stock,
                 0
             );
-
+product.lastSync = syncStartedAt;
+       
         await product.save();
 
     }
-    await Product.deleteMany({
-    styleNo: {
-        $nin: [...syncedStyles]
-    }
+   await Product.deleteMany({
+    lastSync: { $lt: syncStartedAt }
 });
 
 console.log("Old Products Removed");
     
 console.log("================================");
 console.log("SAVED PRODUCT");
-console.log("STYLE :", product.styleNo);
-console.log("NAME  :", product.name);
-console.log("STOCK :", product.stock);
-console.log("SIZE STOCK :", JSON.stringify(product.sizeStock, null, 2));
-console.log("LOCATION :", JSON.stringify(product.locationStock, null, 2));
 console.log("================================");
     console.log("Sync Completed");
 
