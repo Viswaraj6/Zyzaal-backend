@@ -202,11 +202,11 @@ product.lastSync = syncStartedAt;
         await product.save();
 
     }
-   await Product.deleteMany({
-    lastSync: { $lt: syncStartedAt }
-});
+  // await Product.deleteMany({
+   // lastSync: { $lt: syncStartedAt }
+//});
 
-console.log("Old Products Removed");
+//console.log("Old Products Removed");
     
 console.log("================================");
 console.log("SAVED PRODUCT");
