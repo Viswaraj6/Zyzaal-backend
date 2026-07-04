@@ -8,7 +8,7 @@ console.log("========== NEW SYNC.JS ==========");
     
 console.log("TOKEN:", token);
 console.log("ORG:", process.env.ZOHO_ORGANIZATION_ID);
-    
+console.log("Access Token:", token);    
    console.log("Calling Inventory API..."); 
 
     const res = await axios.get(
