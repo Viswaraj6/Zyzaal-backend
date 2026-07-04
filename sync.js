@@ -201,6 +201,14 @@ product.sizeStock.push({
         await product.save();
 
     }
+    await Product.deleteMany({
+    styleNo: {
+        $nin: [...syncedStyles]
+    }
+});
+
+console.log("Old Products Removed");
+    
 console.log("================================");
 console.log("SAVED PRODUCT");
 console.log("STYLE :", product.styleNo);
