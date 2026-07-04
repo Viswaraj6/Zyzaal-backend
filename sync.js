@@ -172,8 +172,13 @@ if (
         item.quantity_available_for_sale
     );
 
-    product.sizeStock[index].stock =
-        Number(item.quantity_available_for_sale || 0);
+   const availableStock = locations.reduce(
+    (total, loc) =>
+        total + Number(loc.location_available_for_sale_stock || 0),
+    0
+);
+
+product.sizeStock[index].stock = availableStock;
 
 } else {
 
