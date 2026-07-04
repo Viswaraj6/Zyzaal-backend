@@ -78,7 +78,7 @@ console.log(JSON.stringify(locationRes.data, null, 2));
     continue;
 }
 
-    const sku = item.sku;
+   const sku = (item.sku || "").trim();
 
     // 👇 இதற்கு கீழே உன் பழைய code அதே மாதிரி இருக்கட்டும்
         // Last digit = Size
