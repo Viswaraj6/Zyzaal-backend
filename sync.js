@@ -86,7 +86,14 @@ console.log(JSON.stringify(locationRes.data, null, 2));
 
         // First 4 digit = Style
         const styleNo = sku.slice(0, -1);
-
+console.log(
+    "SKU:",
+    sku,
+    "SIZE DIGIT:",
+    sizeDigit,
+    "CATEGORY:",
+    item.category_name
+);
        const category = (item.category_name || "").toUpperCase();
 
 let size = "";
