@@ -187,11 +187,17 @@ product.sizeStock[index].stock = availableStock;
         item.quantity_available_for_sale
     );
 
-    product.sizeStock.push({
-        size,
-        stock: Number(item.quantity_available_for_sale || 0),
-        sku: item.sku
-    });
+  const availableStock = locations.reduce(
+    (total, loc) =>
+        total + Number(loc.location_available_for_sale_stock || 0),
+    0
+);
+
+product.sizeStock.push({
+    size,
+    stock: availableStock,
+    sku: item.sku
+});
 
 }
 
