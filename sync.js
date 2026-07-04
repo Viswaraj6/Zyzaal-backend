@@ -199,9 +199,14 @@ product.sizeStock.push({
             );
 product.lastSync = syncStartedAt;
        
-        await product.save();
+       await product.save();
 
-    }
+console.log(
+    "Saved:",
+    product.styleNo,
+    size,
+    product.stock
+);
   // await Product.deleteMany({
    // lastSync: { $lt: syncStartedAt }
 //});
@@ -209,9 +214,8 @@ product.lastSync = syncStartedAt;
 //console.log("Old Products Removed");
     
 console.log("================================");
-console.log("SAVED PRODUCT");
+console.log("Sync Completed");
 console.log("================================");
-    console.log("Sync Completed");
 
 }
 
