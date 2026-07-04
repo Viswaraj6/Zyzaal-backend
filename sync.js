@@ -113,6 +113,7 @@ if (
         case "3": size = "34"; break;
         case "4": size = "36"; break;
         case "5": size = "38"; break;
+       case "6": size = "40"; break; 
     }
 
 } else {
