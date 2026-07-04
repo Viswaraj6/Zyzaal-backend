@@ -207,6 +207,7 @@ console.log(
     size,
     product.stock
 );
+       } 
   // await Product.deleteMany({
    // lastSync: { $lt: syncStartedAt }
 //});
