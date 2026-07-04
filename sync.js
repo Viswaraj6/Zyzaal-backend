@@ -77,7 +77,11 @@ console.log("ITEM:", item.item_id, item.sku);
 
     continue;
 }
-
+if (item.sku === "SS-LPUR-S(25001)") {
+    console.log("ITEM DATA START");
+    console.log(JSON.stringify(item, null, 2));
+    console.log("ITEM DATA END");
+}
    const sku = (item.sku || "").trim();
 
     // 👇 இதற்கு கீழே உன் பழைய code அதே மாதிரி இருக்கட்டும்
