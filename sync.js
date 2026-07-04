@@ -90,7 +90,7 @@ const sizeDigit = itemCode.slice(-1);
 
 // First 4 digits = Style Number
 const styleNo = itemCode.slice(0, 4);
-
+syncedStyles.add(styleNo);
 console.log(
     "ITEM NAME:",
     itemCode,
