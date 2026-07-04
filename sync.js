@@ -27,7 +27,7 @@ console.log("TOTAL ITEMS:", res.data.items.length);
     
     const Product = global.Product;
    const syncStartedAt = new Date();
-console.log("TOTAL ITEMS:", res.data.items.length);
+
 console.log("Starting Loop...");
    for (const item of res.data.items) {
 
