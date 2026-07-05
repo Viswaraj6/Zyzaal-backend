@@ -89,6 +89,11 @@ const detailRes = await axios.get(
     }
 );
     const docId = detailRes.data.item.documents[0]?.document_id;
+   
+   if (!docId) {
+    console.log("No image found for", item.sku);
+    continue;
+}
 
 console.log("DOC ID:", docId);
    
