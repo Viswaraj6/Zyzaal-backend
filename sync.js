@@ -33,62 +33,10 @@ console.log("TOTAL ITEMS:", res.data.items.length);
 console.log("Starting Loop...");
    for (const item of res.data.items) {
        
-await new Promise(resolve => setTimeout(resolve, 500));
-       
+
     console.log("Checking Item:", item.item_id, item.sku);
 
-    let locations = [];
-
-    try {
-       console.log("================================");
-console.log("TOKEN:", token);
-console.log("ORG:", process.env.ZOHO_ORGANIZATION_ID);
-console.log("ITEM:", item.item_id, item.sku);
-        const locationRes = await axios.get(
-            `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
-            {
-                params: {
-                    organization_id: process.env.ZOHO_ORGANIZATION_ID
-                },
-                headers: {
-                    Authorization: `Zoho-oauthtoken ${token}`
-                }
-            }
-        );
-//console.log("LOCATION RESPONSE:");
-//console.log(JSON.stringify(locationRes.data, null, 2));
-        locations = locationRes.data.item_location_details.locations;
-
-      console.log("SUCCESS:", item.item_id, item.sku);
-
-    } 
-  catch (err) {
-
-    console.log("==========================");
-    console.log("FAILED ITEM");
-    console.log("Item ID :", item.item_id);
-    console.log("SKU     :", item.sku);
-
-    console.log("Status  :", err.response?.status);
-
-    console.log("Headers :", err.response?.headers);
-
-    console.log(
-        "Response:",
-        JSON.stringify(err.response?.data, null, 2)
-    );
-
-    console.log("==========================");
-if (err.response?.status === 429) {
-
-    console.log("Rate limit reached. Waiting 5 seconds...");
-
-    await new Promise(resolve => setTimeout(resolve, 5000));
-
-    continue;
-}
-    continue;
-}
+   
 if (item.sku === "SS-LPUR-S(25001)") {
     console.log("ITEM DATA START");
     console.log(JSON.stringify(item, null, 2));
