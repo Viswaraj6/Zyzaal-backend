@@ -48,7 +48,7 @@ console.log("TOTAL ITEMS:", allItems.length);
 console.log("Starting Loop...");
   for (const item of allItems) {
        
-
+ if (item.name !== "02261") continue;
     console.log("Checking Item:", item.item_id, item.sku);
       await new Promise(resolve => setTimeout(resolve, 500));
 let locations = [];
