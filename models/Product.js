@@ -20,10 +20,14 @@ const ProductSchema = new mongoose.Schema({
 
   sizes: [String],
 
-  sizeStock: [{
+ sizeStock: [
+  {
     size: String,
-    stock: Number
-  }],
+    stock: Number,
+    sku: String,
+    image: String
+  }
+],
 
   category: String
 });
