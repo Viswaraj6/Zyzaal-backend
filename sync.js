@@ -79,6 +79,27 @@ const detailRes = await axios.get(
         }
     }
 );
+    const docId = detailRes.data.item.documents[0]?.document_id;
+
+console.log("DOC ID:", docId);
+
+const imageRes = await axios.get(
+    `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
+    {
+        params: {
+            organization_id: process.env.ZOHO_ORGANIZATION_ID
+        },
+        headers: {
+            Authorization: `Zoho-oauthtoken ${token}`
+        }
+    }
+);
+
+console.log("IMAGE RESPONSE:");
+console.log(JSON.stringify(imageRes.data, null, 2));
+
+return;
+    
     console.log("IMAGE NAME:", detailRes.data.item.image_name);
 
 console.log("IMAGE DOC ID:", detailRes.data.item.image_document_id);
