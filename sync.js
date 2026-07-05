@@ -92,9 +92,14 @@ const imageRes = await axios.get(
         },
         headers: {
             Authorization: `Zoho-oauthtoken ${token}`
-        }
+        },
+        responseType: "arraybuffer"
     }
 );
+
+fs.writeFileSync("test.png", imageRes.data);
+
+console.log("IMAGE SAVED");
 
 console.log("IMAGE RESPONSE:");
 console.log(JSON.stringify(imageRes.data, null, 2));
