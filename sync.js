@@ -79,6 +79,9 @@ const detailRes = await axios.get(
         }
     }
 );
+    // 👇 இதை add பண்ணுங்க
+console.log(Object.keys(detailRes.data.item));
+    
     if (item.name === "02261") {
 
     console.log("========== ITEM DETAILS ==========");
