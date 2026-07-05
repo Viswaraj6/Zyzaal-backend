@@ -134,15 +134,7 @@ console.log("Cloudinary URL:", uploadResult.secure_url);
 
 
 //return;
-    
-    console.log("IMAGE NAME:", detailRes.data.item.image_name);
-
-console.log("IMAGE DOC ID:", detailRes.data.item.image_document_id);
-
-console.log("DOCUMENTS:", JSON.stringify(detailRes.data.item.documents, null, 2));
-
-console.log("ATTACHMENTS:", JSON.stringify(detailRes.data.item.attachments, null, 2));
-
+   
     
     if (item.name === "02261") {
 
