@@ -144,7 +144,7 @@ fs.writeFileSync("test.png", imageRes.data);
 console.log("IMAGE SAVED");
 
 
-return;
+//return;
     
     console.log("IMAGE NAME:", detailRes.data.item.image_name);
 
