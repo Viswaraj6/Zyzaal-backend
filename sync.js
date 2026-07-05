@@ -39,7 +39,7 @@ while (hasMore) {
 }
 console.log("Inventory API SUCCESS");
     console.log(JSON.stringify(res.data.page_context, null, 2));
-console.log("TOTAL ITEMS:", res.data.items.length);
+console.log("TOTAL ITEMS:", allItems.length);
     
     const Product = global.Product;
    const syncStartedAt = new Date();
