@@ -45,7 +45,7 @@ console.log("TOTAL ITEMS:", allItems.length);
    const syncStartedAt = new Date();
 
 console.log("Starting Loop...");
-   for (const item of res.data.items) {
+  for (const item of allItems) {
        
 
     console.log("Checking Item:", item.item_id, item.sku);
