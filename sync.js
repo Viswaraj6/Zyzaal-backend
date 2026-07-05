@@ -11,19 +11,32 @@ console.log("ORG:", process.env.ZOHO_ORGANIZATION_ID);
 console.log("Access Token:", token);    
    console.log("Calling Inventory API..."); 
 
+  let allItems = [];
+let page = 1;
+let hasMore = true;
+
+while (hasMore) {
+
     const res = await axios.get(
         "https://www.zohoapis.in/inventory/v1/items",
         {
-          params: {
-    organization_id: process.env.ZOHO_ORGANIZATION_ID,
-    per_page: 100,
-    page: 1
-},
+            params: {
+                organization_id: process.env.ZOHO_ORGANIZATION_ID,
+                per_page: 100,
+                page: page
+            },
             headers: {
                 Authorization: `Zoho-oauthtoken ${token}`
             }
         }
     );
+
+    allItems.push(...res.data.items);
+
+    hasMore = res.data.page_context.has_more_page;
+
+    page++;
+}
 console.log("Inventory API SUCCESS");
     console.log(JSON.stringify(res.data.page_context, null, 2));
 console.log("TOTAL ITEMS:", res.data.items.length);
