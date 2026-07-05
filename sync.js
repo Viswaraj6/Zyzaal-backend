@@ -23,6 +23,7 @@ console.log("Access Token:", token);
         }
     );
 console.log("Inventory API SUCCESS");
+    console.log(JSON.stringify(res.data.page_context, null, 2));
 console.log("TOTAL ITEMS:", res.data.items.length);
     
     const Product = global.Product;
