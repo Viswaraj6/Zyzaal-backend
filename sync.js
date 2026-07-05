@@ -35,7 +35,30 @@ console.log("Starting Loop...");
        
 
     console.log("Checking Item:", item.item_id, item.sku);
+let locations = [];
 
+try {
+
+    const locationRes = await axios.get(
+        `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
+        {
+            params: {
+                organization_id: process.env.ZOHO_ORGANIZATION_ID
+            },
+            headers: {
+                Authorization: `Zoho-oauthtoken ${token}`
+            }
+        }
+    );
+
+    locations = locationRes.data.item_location_details.locations;
+
+} catch (err) {
+
+    console.log("Failed:", item.sku);
+
+    continue;
+}
    
 if (item.sku === "SS-LPUR-S(25001)") {
     console.log("ITEM DATA START");
