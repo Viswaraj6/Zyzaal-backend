@@ -1,5 +1,6 @@
 
 const axios = require("axios");
+const fs = require("fs");
 const { getAccessToken } = require("./zoho");
 
 async function syncItems() {
