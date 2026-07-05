@@ -41,6 +41,7 @@ if (item.sku === "SS-LPUR-S(25001)") {
     console.log("ITEM DATA START");
     console.log(JSON.stringify(item, null, 2));
      console.log(Object.keys(item)); 
+    console.log("ALL FIELDS:", Object.keys(item));
     console.log("ITEM DATA END");
 }
   const itemCode = (item.name || "").trim();
