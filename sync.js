@@ -151,14 +151,12 @@ if (
             s => s.size === size
         );
 
-        if (index >= 0) {
+      if (index >= 0) {
 
-  const availableStock =
-    Number(item.available_for_sale_stock || 0);
+    product.sizeStock[index].stock = availableStock;
 
-product.sizeStock[index].stock = availableStock;
-
-} else {
+}
+      else {
 
 const availableStock =
     Number(item.available_for_sale_stock || 0);
