@@ -268,7 +268,8 @@ if (
     product.sizeStock.push({
         size,
         stock: availableStock,
-        sku: item.sku
+        sku: item.sku,
+        image: uploadResult.secure_url
     });
 
 }
