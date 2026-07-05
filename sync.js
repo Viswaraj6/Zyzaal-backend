@@ -1,6 +1,7 @@
 
 const axios = require("axios");
-const fs = require("fs");
+   const fs = require("fs");
+const path = require("path");
 const { getAccessToken } = require("./zoho");
 const { v2: cloudinary } = require("cloudinary");
 
@@ -91,8 +92,7 @@ const detailRes = await axios.get(
 
 console.log("DOC ID:", docId);
    
-    const fs = require("fs");
-const path = require("path");
+ 
 
 const imagePath = path.join(__dirname, `${item.item_id}.png`);
 
