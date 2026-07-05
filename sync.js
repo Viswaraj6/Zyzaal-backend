@@ -101,8 +101,6 @@ fs.writeFileSync("test.png", imageRes.data);
 
 console.log("IMAGE SAVED");
 
-console.log("IMAGE RESPONSE:");
-console.log(JSON.stringify(imageRes.data, null, 2));
 
 return;
     
