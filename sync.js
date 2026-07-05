@@ -296,8 +296,12 @@ if (
                 0
             );
 product.lastSync = syncStartedAt;
-       
+
+    product.primaryImage = uploadResult.secure_url;
+product.images = [uploadResult.secure_url];
+      
        await product.save();
+      fs.unlinkSync(imagePath);
 
 console.log(
     "Saved:",
