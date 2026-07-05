@@ -126,22 +126,6 @@ const uploadResult = await cloudinary.uploader.upload(imagePath, {
 
 console.log("Cloudinary URL:", uploadResult.secure_url);    
 
-const imageRes = await axios.get(
-    `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
-    {
-        params: {
-            organization_id: process.env.ZOHO_ORGANIZATION_ID
-        },
-        headers: {
-            Authorization: `Zoho-oauthtoken ${token}`
-        },
-        responseType: "arraybuffer"
-    }
-);
-
-fs.writeFileSync("test.png", imageRes.data);
-
-console.log("IMAGE SAVED");
 
 
 //return;
