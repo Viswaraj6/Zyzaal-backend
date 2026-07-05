@@ -68,7 +68,17 @@ try {
     );
 
     locations = locationRes.data.item_location_details.locations;
-
+const detailRes = await axios.get(
+    `https://www.zohoapis.in/inventory/v1/items/${item.item_id}`,
+    {
+        params: {
+            organization_id: process.env.ZOHO_ORGANIZATION_ID
+        },
+        headers: {
+            Authorization: `Zoho-oauthtoken ${token}`
+        }
+    }
+);
 } 
 catch(err){
 
