@@ -120,6 +120,12 @@ await new Promise((resolve, reject) => {
 
 console.log("Downloaded:", imagePath);
 
+const uploadResult = await cloudinary.uploader.upload(imagePath, {
+    folder: "products"
+});
+
+console.log("Cloudinary URL:", uploadResult.secure_url);    
+
 const imageRes = await axios.get(
     `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
     {
