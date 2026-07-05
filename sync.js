@@ -69,13 +69,19 @@ try {
     locations = locationRes.data.item_location_details.locations;
 
 } 
-catch (err) {
+catch(err){
 
-    console.log("============== ERROR ==============");
-    console.log("SKU :", item.sku);
-    console.log("STATUS :", err.response?.status);
-    console.log("DATA :", err.response?.data);
-    console.log("===================================");
+    if(err.response?.status===429){
+
+        console.log("429...Waiting 10 seconds");
+
+        await new Promise(resolve=>setTimeout(resolve,10000));
+
+        continue;
+
+    }
+
+    console.log(err.response?.data);
 
     continue;
 }
