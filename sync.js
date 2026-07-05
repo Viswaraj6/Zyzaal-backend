@@ -90,6 +90,35 @@ const detailRes = await axios.get(
     const docId = detailRes.data.item.documents[0]?.document_id;
 
 console.log("DOC ID:", docId);
+   
+    const fs = require("fs");
+const path = require("path");
+
+const imagePath = path.join(__dirname, `${item.item_id}.png`);
+
+const imageDownload = await axios.get(
+    `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
+    {
+        params: {
+            organization_id: process.env.ZOHO_ORGANIZATION_ID
+        },
+        headers: {
+            Authorization: `Zoho-oauthtoken ${token}`
+        },
+        responseType: "stream"
+    }
+);
+
+const writer = fs.createWriteStream(imagePath);
+
+imageDownload.data.pipe(writer);
+
+await new Promise((resolve, reject) => {
+    writer.on("finish", resolve);
+    writer.on("error", reject);
+});
+
+console.log("Downloaded:", imagePath);
 
 const imageRes = await axios.get(
     `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
