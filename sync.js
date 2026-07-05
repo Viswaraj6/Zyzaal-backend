@@ -124,21 +124,15 @@ if (
 
         if (index >= 0) {
 
-   const availableStock = locations.reduce(
-    (total, loc) =>
-        total + Number(loc.location_available_for_sale_stock || 0),
-    0
-);
+  const availableStock =
+    Number(item.available_for_sale_stock || 0);
 
 product.sizeStock[index].stock = availableStock;
 
 } else {
 
-  const availableStock = locations.reduce(
-    (total, loc) =>
-        total + Number(loc.location_available_for_sale_stock || 0),
-    0
-);
+const availableStock =
+    Number(item.available_for_sale_stock || 0);
 
 product.sizeStock.push({
     size,
