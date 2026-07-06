@@ -77,38 +77,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
   console.log("⚠ Razorpay keys missing");
 }
 
-/* 📦 PRODUCT */
-const Product = mongoose.model("Product", {
-  name: String,
-  styleNo: String,
-  price: Number,
-  stock: Number,
-
-  // 🔥 IMAGE FIX
-  images: [String],
- primaryImage: String,
-  // 🔥 DETAILS
-  brand: String,
-  fabric: String,
-  typeDetail: String,
-  fit: String,
-  pattern: String,
-  color: String,
-  occasion: String,
-  description: String,
-
-  // 🔥 OTHER
- sizeStock: [{
-  size: String,
-  stock: Number,
-  sku: String
-}],
-  locationStock: [{
-  location: String,
-  stock: Number
-}],
-  category: String
-});
+const Product = require("./models/Product");
 global.Product = Product;
 
 const User = mongoose.model("User", {
