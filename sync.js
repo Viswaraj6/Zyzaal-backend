@@ -275,7 +275,7 @@ product.primaryImage;
         size,
         stock: availableStock,
         sku: item.sku,
-        image: uploadResult.secure_url
+        image: product.primaryImage
     });
 
 }
