@@ -286,7 +286,10 @@ console.log("Cloudinary URL:", uploadResult.secure_url);
             );
 product.lastSync = syncStartedAt;
 
+   if (uploadResult) {
     product.primaryImage = uploadResult.secure_url;
+    product.images = [uploadResult.secure_url];
+}
 product.images = [uploadResult.secure_url];
 
 console.log("Before Save");
