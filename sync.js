@@ -169,6 +169,7 @@ if (
      
         let product = await Product.findOne({ styleNo });
      let uploadResult = null;
+     let imagePath = "";
 
 if (!product || !product.primaryImage) {
    
