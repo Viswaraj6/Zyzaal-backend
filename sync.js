@@ -289,6 +289,9 @@ console.log(product.primaryImage);
 console.log(product.images);
      
        await product.save();
+     
+     console.log("After Save");
+     
       fs.unlinkSync(imagePath);
 
 console.log(
