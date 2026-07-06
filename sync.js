@@ -195,7 +195,7 @@ console.log("DOC ID:", docId);
    
  
 
-const imagePath = path.join(__dirname, `${item.item_id}.png`);
+ imagePath = path.join(__dirname, `${item.item_id}.png`);
 
 const imageDownload = await axios.get(
     `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
