@@ -797,5 +797,6 @@ app.post("/sync-items", checkAdmin, async (req, res) => {
 /* ================= START ================= */
 server.listen(process.env.PORT || 5000, () => {
   console.log("Server running 🚀");
+    syncItems();
    syncSales();
 });
