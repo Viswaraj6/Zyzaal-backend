@@ -33,7 +33,7 @@ if (!status) {
         );
 
         // 2. First invoice
-        const invoice = res.data.invoices[0];
+       const invoices = res.data.invoices;
         
         if (status.lastInvoiceId === invoice.invoice_id) {
 
