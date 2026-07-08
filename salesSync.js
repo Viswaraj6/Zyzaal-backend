@@ -103,7 +103,7 @@ if (index >= 0) {
 }
 
 }
-status.lastInvoiceId = invoice.invoice_id;
+status.lastInvoiceId = invoices[0].invoice_id;
 
 status.lastSyncTime = new Date();
 
