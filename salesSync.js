@@ -69,6 +69,14 @@ if (!status) {
     let product = await Product.findOne({ styleNo });
 
     console.log(product);
+       
+         if (!product) {
+
+    console.log("Product Not Found:", styleNo);
+
+    continue;
+
+}
 
          const sizeField = item.item_custom_fields.find(
     f => f.api_name === "cf_size"
