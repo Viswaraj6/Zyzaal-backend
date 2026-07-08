@@ -40,9 +40,11 @@ async function syncSales() {
         );
 
      const lineItems = detail.data.invoice.line_items;
-        for (const item of lineItems) {
+      for (const item of lineItems) {
 
-    console.log(item.name);
+    const styleNo = item.name.slice(0, 4);
+
+    console.log("Style:", styleNo);
 
 }
 
