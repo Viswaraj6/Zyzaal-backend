@@ -800,3 +800,21 @@ server.listen(process.env.PORT || 5000, () => {
     syncItems();
    syncSales();
 });
+
+// Sales Sync - Every 30 Minutes
+cron.schedule("*/30 * * * *", async () => {
+
+    console.log("Auto Sales Sync...");
+
+    await syncSales();
+
+});
+
+// Every day at 3:00 AM
+cron.schedule("0 3 * * *", async () => {
+
+    console.log("Auto Full Sync...");
+
+    await syncItems();
+
+});
