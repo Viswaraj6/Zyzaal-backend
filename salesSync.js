@@ -34,7 +34,14 @@ if (!status) {
 
         // 2. First invoice
         const invoice = res.data.invoices[0];
+        
+        if (status.lastInvoiceId === invoice.invoice_id) {
 
+    console.log("Already Synced");
+
+    return;
+
+     }
         console.log("Invoice ID:", invoice.invoice_id);
 
         // 3. Get invoice details
