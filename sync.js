@@ -96,16 +96,17 @@ try {
 } 
 catch(err){
 
-    if(err.response?.status===429){
+   if (err.response?.status === 429) {
 
-        console.log("429...Waiting 10 seconds");
+    console.log("429 Waiting 60 seconds");
 
-        await new Promise(resolve=>setTimeout(resolve,30000));
-       
-           
-        continue;
+    await new Promise(r =>
+        setTimeout(r, 60000)
+    );
 
-    }
+    continue;
+
+}
 
     console.log(err.response?.data);
 
