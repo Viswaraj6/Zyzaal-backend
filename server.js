@@ -770,21 +770,25 @@ app.post("/sync-sales", checkAdmin, async (req, res) => {
 
 });
 
-app.get("/sync-zakya", async(req,res)=>{
+app.post("/sync-items", checkAdmin, async (req, res) => {
 
-    try{
+    try {
 
         await syncItems();
 
         res.json({
-            success:true
+            success: true,
+            message: "Full Sync Completed ✅"
         });
 
-    }catch(err){
+    } catch (err) {
 
-        console.log(err.response?.data);
+        console.log(err);
 
-        res.status(500).json(err.response?.data);
+        res.status(500).json({
+            success: false,
+            message: "Full Sync Failed ❌"
+        });
 
     }
 
