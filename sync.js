@@ -59,7 +59,7 @@ console.log("Starting Loop...");
        
 
     console.log("Checking Item:", item.item_id, item.sku);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 let locations = [];
 
 try {
