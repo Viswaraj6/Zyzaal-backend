@@ -101,6 +101,8 @@ catch(err){
         console.log("429...Waiting 10 seconds");
 
         await new Promise(resolve=>setTimeout(resolve,30000));
+       
+             page--;
 
         continue;
 
