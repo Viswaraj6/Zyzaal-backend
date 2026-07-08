@@ -24,7 +24,7 @@ if (!status) {
             {
                 params: {
                     organization_id: process.env.ZOHO_ORGANIZATION_ID,
-                    per_page: 5
+                   per_page: 100
                 },
                 headers: {
                     Authorization: `Zoho-oauthtoken ${token}`
