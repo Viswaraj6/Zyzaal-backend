@@ -50,6 +50,14 @@ async function syncSales() {
 
     console.log(product);
 
+         const sizeField = item.item_custom_fields.find(
+    f => f.api_name === "cf_size"
+);
+
+const soldSize = sizeField?.value;
+
+console.log("Sold Size:", soldSize);
+
 }
 
     } catch (err) {
