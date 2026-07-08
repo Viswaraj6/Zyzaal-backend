@@ -7,7 +7,7 @@ async function syncSales() {
         const token = await getAccessToken();
 
         const res = await axios.get(
-             "https://www.zohoapis.in/inventory/v1/invoices",
+             `https://www.zohoapis.in/inventory/v1/invoices/${invoice.invoice_id}`,
             {
                 params: {
                     organization_id: process.env.ZOHO_ORGANIZATION_ID,
