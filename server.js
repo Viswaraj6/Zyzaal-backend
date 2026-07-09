@@ -13,6 +13,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
+global.isFullSyncRunning = false;
 
 const server = http.createServer(app);
 
