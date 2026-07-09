@@ -283,9 +283,7 @@ status.status = "running";
 await status.save();   
      console.log("After Save");
      
-     if (uploadResult) {
-    fs.unlinkSync(imagePath);
-}
+    
 console.log(
     "Saved:",
     product.styleNo,
