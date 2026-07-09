@@ -204,56 +204,7 @@ if (
 }
      
         let product = await Product.findOne({ styleNo });
-     let uploadResult = null;
-     let imagePath = "";
-
-if (!product) {
-   
- const docId = item.image_document_id;
-   
-   if (!docId) {
-    console.log("No image found for", item.sku);
-    continue;
-}
-
-console.log("DOC ID:", docId);
-   
- 
-
- imagePath = path.join(__dirname, `${item.item_id}.png`);
-
-const imageDownload = await callWithRetry(() =>
-    axios.get(
-        `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
-        {
-            params: {
-                organization_id: process.env.ZOHO_ORGANIZATION_ID
-            },
-            headers: {
-                Authorization: `Zoho-oauthtoken ${token}`
-            },
-            responseType: "stream"
-        }
-    )
-);
-const writer = fs.createWriteStream(imagePath);
-
-imageDownload.data.pipe(writer);
-
-await new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-});
-
-console.log("Downloaded:", imagePath);
-
- uploadResult = await cloudinary.uploader.upload(imagePath, {
-    folder: "products"
-});
-
-console.log("Cloudinary URL:", uploadResult.secure_url);    
-}
-
+    
         if (!product) {
 
            product = new Product({
