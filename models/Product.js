@@ -29,7 +29,9 @@ const ProductSchema = new mongoose.Schema({
   }
 ],
 
-  category: String
+  category: String,
+  
+  lastSync: Date
 });
 
 module.exports = mongoose.model("Product", ProductSchema);
