@@ -330,7 +330,16 @@ console.log(product.primaryImage);
 console.log(product.images);
      
        await product.save();
-     
+   
+  status.lastItemIndex = i + 1;
+
+status.lastItemId = item.item_id;
+
+status.lastStyleNo = styleNo;
+
+status.status = "running";
+
+await status.save();   
      console.log("After Save");
      
      if (uploadResult) {
