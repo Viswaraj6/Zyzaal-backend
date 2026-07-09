@@ -244,19 +244,20 @@ console.log("DOC ID:", docId);
 
  imagePath = path.join(__dirname, `${item.item_id}.png`);
 
-const imageDownload = await axios.get(
-    `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
-    {
-        params: {
-            organization_id: process.env.ZOHO_ORGANIZATION_ID
-        },
-        headers: {
-            Authorization: `Zoho-oauthtoken ${token}`
-        },
-        responseType: "stream"
-    }
+const imageDownload = await callWithRetry(() =>
+    axios.get(
+        `https://www.zohoapis.in/inventory/v1/documents/${docId}`,
+        {
+            params: {
+                organization_id: process.env.ZOHO_ORGANIZATION_ID
+            },
+            headers: {
+                Authorization: `Zoho-oauthtoken ${token}`
+            },
+            responseType: "stream"
+        }
+    )
 );
-
 const writer = fs.createWriteStream(imagePath);
 
 imageDownload.data.pipe(writer);
