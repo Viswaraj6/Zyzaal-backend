@@ -199,18 +199,7 @@ if (
 
 if (!product) {
    
-   const detailRes = await axios.get(
-    `https://www.zohoapis.in/inventory/v1/items/${item.item_id}`,
-    {
-        params: {
-            organization_id: process.env.ZOHO_ORGANIZATION_ID
-        },
-        headers: {
-            Authorization: `Zoho-oauthtoken ${token}`
-        }
-    }
-);
-    const docId = detailRes.data.item.documents[0]?.document_id;
+ const docId = item.image_document_id;
    
    if (!docId) {
     console.log("No image found for", item.sku);
