@@ -64,7 +64,7 @@ for (const item of allItems) {
 
     if(count % 10 === 0)
 
-        console.log("Cooling 20 seconds...");
+        console.log("Cooling 30 seconds...");
 
        await new Promise(resolve=>
 setTimeout(resolve,30000)
