@@ -116,7 +116,8 @@ for (const item of allItems) {
 
 try {
 
-    const locationRes = await axios.get(
+  const locationRes = await callWithRetry(() =>
+    axios.get(
         `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
         {
             params: {
@@ -126,8 +127,8 @@ try {
                 Authorization: `Zoho-oauthtoken ${token}`
             }
         }
-    );
-
+    )
+);
     locations = locationRes.data.item_location_details.locations;
 
 
