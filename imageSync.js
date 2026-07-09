@@ -45,6 +45,20 @@ async function imageSync() {
 
     console.log("TOTAL ITEMS:", allItems.length);
 
+    let status = await SyncStatus.findOne({
+    type: "image"
+});
+
+if (!status) {
+    status = new SyncStatus({
+        type: "image"
+    });
+}
+
+let startIndex = status.lastItemIndex || 0;
+
+console.log("Resume From:", startIndex);
+    
     let count = 0;
 
     for (const item of allItems) {
