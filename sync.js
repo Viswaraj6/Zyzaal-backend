@@ -370,7 +370,15 @@ if (!status) {
     });
 
 }
+   
+status.lastItemIndex = 0;
 
+status.lastItemId = "";
+
+status.lastStyleNo = "";
+
+status.status = "completed";
+   
 status.lastSyncTime = new Date();
 
 await status.save();
