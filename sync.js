@@ -59,20 +59,21 @@ let hasMore = true;
 
 while (hasMore) {
 
-    const res = await axios.get(
+   const res = await callWithRetry(() =>
+    axios.get(
         "https://www.zohoapis.in/inventory/v1/items",
         {
             params: {
                 organization_id: process.env.ZOHO_ORGANIZATION_ID,
                 per_page: 100,
-                page: page
+                page
             },
             headers: {
                 Authorization: `Zoho-oauthtoken ${token}`
             }
         }
-    );
-
+    )
+);
     allItems.push(...res.data.items);
 
     hasMore = res.data.page_context.has_more_page;
