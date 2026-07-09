@@ -232,12 +232,12 @@ if (
   product.price = Number(item.rate || 0);
 product.category = item.category_name;
   
-  //  const availableStock = locations.reduce(
-    //(total, loc) =>
-      //  total + Number(loc.location_available_for_sale_stock || 0),
-   // 0
-//);   
-const availableStock = 0;
+const availableStock = locations.reduce(
+(total,loc)=>
+total+Number(loc.location_available_for_sale_stock||0),
+0
+);
+  
         const index = product.sizeStock.findIndex(
             s => s.size === size
         );
