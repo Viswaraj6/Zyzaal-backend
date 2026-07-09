@@ -839,8 +839,22 @@ cron.schedule("*/30 * * * *", async () => {
 // Every day at 3:00 AM
 cron.schedule("0 3 * * *", async () => {
 
-    console.log("Auto Full Sync...");
+    if (global.isFullSyncRunning) return;
 
-    await syncItems();
+    global.isFullSyncRunning = true;
+
+    try {
+
+        console.log("Auto Full Sync...");
+
+        await syncItems();
+
+    }
+
+    finally {
+
+        global.isFullSyncRunning = false;
+
+    }
 
 });
