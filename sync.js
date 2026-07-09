@@ -106,8 +106,8 @@ console.log("Resume From:", startIndex);
    
 console.log("Starting Loop...");
 
-let count = 0;
-
+let count = startIndex;
+   
 for (let i = startIndex; i < allItems.length; i++) {
 
     const item = allItems[i];
