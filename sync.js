@@ -113,9 +113,7 @@ for (const item of allItems) {
 
     let locations = [];
 
-try {
-
-  const locationRes = await callWithRetry(() =>
+const locationRes = await callWithRetry(() =>
     axios.get(
         `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
         {
@@ -128,24 +126,13 @@ try {
         }
     )
 );
-    locations = locationRes.data.item_location_details.locations;
 
+locations = locationRes.data.item_location_details.locations;
 
-
-//return;
-   
-    
-    if (item.name === "02261") {
-
+if (item.name === "02261") {
     console.log("========== ITEM DETAILS ==========");
-
-     //console.log(JSON.stringify(detailRes.data, null, 2));
-
     console.log("==================================");
-
-    //process.exit();
 }
-} 
    
 if (item.sku === "SS-LPUR-S(25001)") {
     console.log("ITEM DATA START");
