@@ -61,7 +61,9 @@ console.log("Resume From:", startIndex);
     
     let count = 0;
 
-    for (const item of allItems) {
+   for (let i = startIndex; i < allItems.length; i++) {
+
+    const item = allItems[i];
 
         count++;
 
