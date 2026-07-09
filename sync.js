@@ -73,10 +73,7 @@ for (const item of allItems) {
     }
 
     console.log("Checking Item:", item.item_id, item.sku);
-if (count === 1) {
-    console.log(JSON.stringify(item, null, 2));
-    break;
-}
+
     await new Promise(resolve =>
         setTimeout(resolve, 3000)
     );
