@@ -191,7 +191,7 @@ if (
      let uploadResult = null;
      let imagePath = "";
 
-if (!product || !product.primaryImage) {
+if (!product) {
    
    const detailRes = await axios.get(
     `https://www.zohoapis.in/inventory/v1/items/${item.item_id}`,
