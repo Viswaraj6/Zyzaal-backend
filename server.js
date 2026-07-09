@@ -834,21 +834,21 @@ server.listen(process.env.PORT || 5000, () => {
 });
 
 // Sales Sync - Every 30 Minutes
-cron.schedule("*/30 * * * *", async () => {
+//cron.schedule("*/30 * * * *", async () => {
 
-    if (global.isFullSyncRunning) {
+  //  if (global.isFullSyncRunning) {
 
-        console.log("Full Sync Running...Sales Sync Skipped");
+        //console.log("Full Sync Running...Sales Sync Skipped");
 
-        return;
+      //  return;
 
-    }
+ //   }
 
-    console.log("Auto Sales Sync...");
+  //  console.log("Auto Sales Sync...");
 
-    await syncSales();
+   // await syncSales();
 
-});
+//});
 
 // Every day at 3:00 AM
 cron.schedule("0 3 * * *", async () => {
