@@ -772,6 +772,17 @@ app.post("/sync-sales", checkAdmin, async (req, res) => {
 
 });
 
+app.post("/admin/image-sync", async (req, res) => {
+
+    imageSync();
+
+    res.json({
+        success: true,
+        message: "Image Sync Started"
+    });
+
+});
+
 app.post("/sync-items", checkAdmin, async (req, res) => {
 
     if (global.isFullSyncRunning) {
