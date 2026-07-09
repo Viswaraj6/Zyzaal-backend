@@ -249,12 +249,12 @@ product.primaryImage;
 }
     else {
 
-    product.sizeStock.push({
-        size,
-        stock: availableStock,
-        sku: item.sku,
-        image:uploadResult?.secure_url || product.primaryImage
-    });
+   product.sizeStock.push({
+    size,
+    stock: availableStock,
+    sku: item.sku,
+    image: product.primaryImage
+});
 
 }
 
