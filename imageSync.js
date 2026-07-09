@@ -169,7 +169,15 @@ await status.save();
         // Cloudinary rate limit avoid
         await new Promise(r => setTimeout(r, 1000));
     }
+    
+status.lastItemIndex = 0;
+status.lastItemId = "";
+status.lastStyleNo = "";
+status.status = "completed";
+status.lastSyncTime = new Date();
 
+await status.save();
+    
     console.log("========== IMAGE SYNC COMPLETED ==========");
 }
 
