@@ -62,20 +62,22 @@ for (const item of allItems) {
 
     count++;
 
-    if(count % 10 === 0)
+    if (count % 10 === 0) {
 
         console.log("Cooling 30 seconds...");
 
-       await new Promise(resolve=>
-setTimeout(resolve,30000)
-);
+        await new Promise(resolve =>
+            setTimeout(resolve, 30000)
+        );
+
     }
 
     console.log("Checking Item:", item.item_id, item.sku);
 
-   await new Promise(resolve =>
-    setTimeout(resolve,3000)
-);
+    await new Promise(resolve =>
+        setTimeout(resolve, 3000)
+    );
+
     let locations = [];
 
 try {
@@ -110,23 +112,26 @@ try {
     //process.exit();
 }
 } 
-catch(err){
+catch (err) {
 
-   if (err.response?.status === 429) {
+    if (err.response?.status === 429) {
 
-    console.log("429 Waiting 60 seconds");
+        console.log("429 Waiting 60 seconds...Retrying");
 
-    await new Promise(r =>
-        setTimeout(r, 60000)
-    );
+        await new Promise(resolve =>
+            setTimeout(resolve, 60000)
+        );
+
+        count--;
+
+        continue;
+
+    }
+
+    console.log(err.response?.data || err.message);
 
     continue;
 
-}
-
-    console.log(err.response?.data);
-
-    continue;
 }
    
 if (item.sku === "SS-LPUR-S(25001)") {
