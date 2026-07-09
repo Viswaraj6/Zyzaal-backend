@@ -773,23 +773,37 @@ app.post("/sync-sales", checkAdmin, async (req, res) => {
 
 app.post("/sync-items", checkAdmin, async (req, res) => {
 
+    if (global.isFullSyncRunning) {
+
+        return res.json({
+
+            success:false,
+
+            message:"Full Sync Already Running"
+
+        });
+
+    }
+
+    global.isFullSyncRunning = true;
+
     try {
 
         await syncItems();
 
         res.json({
-            success: true,
-            message: "Full Sync Completed ✅"
+
+            success:true,
+
+            message:"Full Sync Completed"
+
         });
 
-    } catch (err) {
+    }
 
-        console.log(err);
+    finally {
 
-        res.status(500).json({
-            success: false,
-            message: "Full Sync Failed ❌"
-        });
+        global.isFullSyncRunning = false;
 
     }
 
