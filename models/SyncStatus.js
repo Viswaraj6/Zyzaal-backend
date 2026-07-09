@@ -9,7 +9,28 @@ const SyncStatusSchema = new mongoose.Schema({
 
     lastInvoiceId: String,
 
-    lastSyncTime: Date
+    lastSyncTime: Date,
+
+    // Full Sync Resume
+    lastItemIndex: {
+        type: Number,
+        default: 0
+    },
+
+    lastItemId: {
+        type: String,
+        default: ""
+    },
+
+    lastStyleNo: {
+        type: String,
+        default: ""
+    },
+
+    status: {
+        type: String,
+        default: "idle"
+    }
 
 });
 
