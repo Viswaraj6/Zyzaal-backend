@@ -120,8 +120,8 @@ for (let i = startIndex; i < allItems.length; i++) {
 
  if(count%50===0){
 
-    console.log("Cooling 30 sec");
-
+   log("Cooling 30 sec...");
+   
     await new Promise(r =>
         setTimeout(r,30000)
     );
