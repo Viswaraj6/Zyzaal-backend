@@ -357,7 +357,7 @@ if (latestInvoice.data.invoices.length > 0) {
 console.log("Full Sync Status Saved");
     
 console.log("================================");
-console.log("Sync Completed");
+log("✅ Full Sync Completed");
 console.log("================================");
 
 }
