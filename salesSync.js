@@ -62,7 +62,7 @@ if (!status) {
 
      const lineItems = detail.data.invoice.line_items;
         
-     for (const item of detail.data.invoice.line_items) {
+    for (const item of lineItems){
 
     const styleNo = item.name.slice(0, 4);
 
