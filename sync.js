@@ -313,7 +313,42 @@ status.status = "completed";
 status.lastSyncTime = new Date();
 
 await status.save();
+  
+const salesStatus = await SyncStatus.findOne({
+    type: "sales"
+}) || new SyncStatus({
+    type: "sales"
+});
 
+const latestInvoice = await axios.get(
+    "https://www.zohoapis.in/inventory/v1/invoices",
+    {
+        params: {
+            organization_id: process.env.ZOHO_ORGANIZATION_ID,
+            per_page: 1
+        },
+        headers: {
+            Authorization: `Zoho-oauthtoken ${token}`
+        }
+    }
+);
+
+if (latestInvoice.data.invoices.length > 0) {
+
+    salesStatus.lastInvoiceId =
+        latestInvoice.data.invoices[0].invoice_id;
+
+    salesStatus.lastSyncTime = new Date();
+
+    await salesStatus.save();
+
+    console.log(
+        "Sales Sync Reset To:",
+        latestInvoice.data.invoices[0].invoice_number
+    );
+
+}
+  
 console.log("Full Sync Status Saved");
     
 console.log("================================");
