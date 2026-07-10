@@ -90,18 +90,19 @@ while (hasMore && !stopSync) {
     console.log("Invoice ID:", invoice.invoice_id);
 
         // 3. Get invoice details
-        const detail = await axios.get(
-            `https://www.zohoapis.in/inventory/v1/invoices/${invoice.invoice_id}`,
-            {
-                params: {
-                    organization_id: process.env.ZOHO_ORGANIZATION_ID
-                },
-                headers: {
-                    Authorization: `Zoho-oauthtoken ${token}`
-                }
+       const detail = await callWithRetry(() =>
+    axios.get(
+        `https://www.zohoapis.in/inventory/v1/invoices/${invoice.invoice_id}`,
+        {
+            params: {
+                organization_id: process.env.ZOHO_ORGANIZATION_ID
+            },
+            headers: {
+                Authorization: `Zoho-oauthtoken ${token}`
             }
-        );
-
+        }
+    )
+);
      const lineItems = detail.data.invoice.line_items;
         
     for (const item of lineItems){
