@@ -23,7 +23,7 @@ const io = new Server(server,{
     origin:"*"
   }
 });
-
+global.io = io; 
 app.set("io", io);
 
 app.use(express.json({ limit: "50mb" }));
