@@ -64,7 +64,7 @@ if (!status) {
         
     for (const item of lineItems){
 
-    const styleNo = item.name.slice(0, 4);
+   const styleNo = (item.name || "").trim().slice(0,4);
 
     let product = await Product.findOne({ styleNo });
 
