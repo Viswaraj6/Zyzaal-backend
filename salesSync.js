@@ -78,14 +78,15 @@ while (hasMore && !stopSync) {
 
     for (const invoice of invoices) {
         
-    if (status.lastInvoiceId === invoice.invoice_id) {
+   if (status.lastInvoiceId === invoice.invoice_id) {
 
-        console.log("Reached Last Synced Invoice");
+    console.log("Reached Last Synced Invoice");
 
-        break;
+    stopSync = true;
 
-    }
+    break;
 
+}
     console.log("Invoice ID:", invoice.invoice_id);
 
         // 3. Get invoice details
