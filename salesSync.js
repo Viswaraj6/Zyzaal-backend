@@ -78,6 +78,17 @@ if (!status) {
 
 }
 
+         status.lastInvoiceId = invoice.invoice_id;
+
+status.lastSyncTime = new Date();
+
+await status.save();
+
+console.log(
+    "Invoice Synced:",
+    invoice.invoice_number
+);
+         
          const sizeField = item.item_custom_fields.find(
     f => f.api_name === "cf_size"
 );
