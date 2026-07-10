@@ -85,7 +85,7 @@ while (hasMore) {
     page++;
     console.log(JSON.stringify(res.data.page_context, null, 2));
 }
-console.log("Inventory API SUCCESS");
+log("Inventory API SUCCESS");
     
 console.log("TOTAL ITEMS:", allItems.length);
     
