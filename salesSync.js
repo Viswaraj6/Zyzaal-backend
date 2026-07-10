@@ -48,24 +48,36 @@ if (!status) {
 
 }
         // 1. Get latest invoices
-        const res = await axios.get(
+       let page = 1;
+let hasMore = true;
+let stopSync = false;
+
+while (hasMore && !stopSync) {
+
+    const res = await callWithRetry(() =>
+        axios.get(
             "https://www.zohoapis.in/inventory/v1/invoices",
             {
                 params: {
                     organization_id: process.env.ZOHO_ORGANIZATION_ID,
-                   per_page: 100
+                    per_page: 100,
+                    page
                 },
                 headers: {
                     Authorization: `Zoho-oauthtoken ${token}`
                 }
             }
-        );
+        )
+    );
 
-        // 2. First invoice
-       const invoices = res.data.invoices;
+    const invoices = res.data.invoices;
+
+    hasMore = res.data.page_context.has_more_page;
+
+    page++;
+
+    for (const invoice of invoices) {
         
-      for (const invoice of invoices) {
-
     if (status.lastInvoiceId === invoice.invoice_id) {
 
         console.log("Reached Last Synced Invoice");
