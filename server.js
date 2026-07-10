@@ -772,7 +772,7 @@ app.post("/sync-sales", checkAdmin, async (req, res) => {
 
 });
 
-app.post("/admin/image-sync", async (req, res) => {
+app.post("/admin/image-sync", checkAdmin, async (req, res) => {
 
     imageSync();
 
