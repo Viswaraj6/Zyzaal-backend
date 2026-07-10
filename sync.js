@@ -87,7 +87,7 @@ while (hasMore) {
 }
 log("Inventory API SUCCESS");
     
-console.log("TOTAL ITEMS:", allItems.length);
+log(`TOTAL ITEMS : ${allItems.length}`);
     
     const Product = global.Product;
    const syncStartedAt = new Date();
