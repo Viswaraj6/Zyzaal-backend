@@ -78,16 +78,28 @@ if (!status) {
 
 }
          
-       const sizeField = (item.item_custom_fields || []).find(
+      const sizeField = (item.item_custom_fields || []).find(
     f => f.api_name === "cf_size"
 );
 
 const soldSize = sizeField?.value;
 
+if (!soldSize) {
+
+    console.log(
+        "No Size Found:",
+        item.name
+    );
+
+    continue;
+}
+
 console.log("Sold Size:", soldSize);
-         const index = product.sizeStock.findIndex(
+
+const index = product.sizeStock.findIndex(
     s => s.size === soldSize
 );
+
 
 console.log("Index:", index);
 
