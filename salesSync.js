@@ -78,7 +78,7 @@ if (!status) {
 
 }
          
-         const sizeField = item.item_custom_fields.find(
+       const sizeField = (item.item_custom_fields || []).find(
     f => f.api_name === "cf_size"
 );
 
