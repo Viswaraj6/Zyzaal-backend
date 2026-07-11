@@ -194,12 +194,13 @@ log(
 `Invoice Synced : ${invoice.invoice_number}`
 );
     } 
-     }   
+     }  
+log("✅ Sales Sync Completed");
+        
     } catch (err) {
 
-        console.log(err.response?.status);
-        console.log(err.response?.data || err.message);
-
+       log(`❌ Sales Sync Error : ${err.response?.status || err.message}`);
+console.log(err.response?.data || err.message);
     }
 }
 
