@@ -97,7 +97,7 @@ while (hasMore && !stopSync) {
     break;
 
 }
-    console.log("Invoice ID:", invoice.invoice_id);
+    log(`Invoice : ${invoice.invoice_number}`);
 
         // 3. Get invoice details
        const detail = await callWithRetry(() =>
