@@ -87,6 +87,10 @@ while (hasMore && !stopSync) {
     page++;
     
     for (const invoice of invoices) {
+     console.log("========================");
+    console.log("Invoice No :", invoice.invoice_number);
+    console.log("Invoice ID :", invoice.invoice_id);
+    console.log("Created Time :", invoice.created_time);
         
 console.log(
     "Saved ID :",
