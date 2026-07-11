@@ -378,18 +378,85 @@ res.status(500).json({
 
 });
 app.get("/products", async (req, res) => {
-  try {
 
-    const products = await Product.find().sort({ _id: -1 });
+    try{
 
-    res.json(products);
+        const page =
+        Number(req.query.page) || 1;
 
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      error: "Failed to fetch products ❌"
-    });
-  }
+        const limit =
+        Number(req.query.limit) || 200;
+
+        const skip =
+        (page - 1) * limit;
+
+        const totalProducts =
+        await Product.countDocuments();
+
+        const products =
+        await Product.find()
+        .sort({_id:-1})
+        .skip(skip)
+        .limit(limit);
+
+        // Current page stock
+        let pageStock = 0;
+
+        products.forEach(product=>{
+
+            pageStock +=
+            (product.sizeStock || [])
+            .reduce((a,b)=>a+b.stock,0);
+
+        });
+
+        // Overall stock
+        const allProducts =
+        await Product.find({},{
+            sizeStock:1
+        });
+
+        let overallStock = 0;
+
+        allProducts.forEach(product=>{
+
+            overallStock +=
+            (product.sizeStock || [])
+            .reduce((a,b)=>a+b.stock,0);
+
+        });
+
+        res.json({
+
+            products,
+
+            page,
+
+            limit,
+
+            totalProducts,
+
+            totalPages:
+            Math.ceil(totalProducts/limit),
+
+            pageStock,
+
+            overallStock
+
+        });
+
+    }catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+
+            error:"Failed"
+
+        });
+
+    }
+
 });
 /* DELETE PRODUCT (FIXED) */
 app.delete("/products/:id", checkAdmin, async (req, res) => {
