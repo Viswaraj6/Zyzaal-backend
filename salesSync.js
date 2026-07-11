@@ -147,7 +147,7 @@ if (!soldSize) {
     continue;
 }
 
-console.log("Sold Size:", soldSize);
+log(`Sold Size : ${soldSize}`);
 
 const index = product.sizeStock.findIndex(
     s => s.size === soldSize
