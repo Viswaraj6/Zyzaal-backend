@@ -90,7 +90,7 @@ while (hasMore && !stopSync) {
         
    if (status.lastInvoiceId === invoice.invoice_id) {
 
-    console.log("Reached Last Synced Invoice");
+    log("Reached Last Synced Invoice");
 
     stopSync = true;
 
