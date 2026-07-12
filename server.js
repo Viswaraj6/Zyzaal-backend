@@ -309,6 +309,12 @@ app.post(
 
            const rows = XLSX.utils.sheet_to_json(sheet);
 
+          const selectedFields = JSON.parse(
+    req.body.fields || "[]"
+);
+
+console.log("Selected Fields :", selectedFields);
+
 let updated = 0;
 let notFound = 0;
 
