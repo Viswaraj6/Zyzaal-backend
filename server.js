@@ -31,7 +31,9 @@ app.set("io", io);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors({ origin: "*" }));
-
+const upload = multer({
+  storage: multer.memoryStorage()
+});
 /* 🔐 ADMIN LOGIN */
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "Vivin@14";
