@@ -215,6 +215,21 @@ log(
 );
     } 
      }  
+if (newestInvoiceId) {
+
+    status.lastInvoiceId = newestInvoiceId;
+
+    status.lastSyncTime = new Date();
+
+    await status.save();
+
+    console.log(
+        "Last Invoice Updated:",
+        newestInvoiceId
+    );
+
+}
+        
 log("✅ Sales Sync Completed");
         
     } catch (err) {
