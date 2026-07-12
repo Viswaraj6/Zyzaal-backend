@@ -331,33 +331,70 @@ for (const row of rows) {
         continue;
     }
   
-if (row.Category)
+if (
+    selectedFields.includes("category") &&
+    row.Category !== undefined
+) {
     product.category = row.Category;
+}
 
-if (row.Color)
+if (
+    selectedFields.includes("color") &&
+    row.Color !== undefined
+) {
     product.color = row.Color;
+}
 
-if (row.Brand)
+if (
+    selectedFields.includes("brand") &&
+    row.Brand !== undefined
+) {
     product.brand = row.Brand;
+}
 
-if (row.Fabric)
+if (
+    selectedFields.includes("fabric") &&
+    row.Fabric !== undefined
+) {
     product.fabric = row.Fabric;
+}
 
-if (row.Fit)
+if (
+    selectedFields.includes("fit") &&
+    row.Fit !== undefined
+) {
     product.fit = row.Fit;
+}
 
-if (row.Pattern)
+if (
+    selectedFields.includes("pattern") &&
+    row.Pattern !== undefined
+) {
     product.pattern = row.Pattern;
+}
 
-if (row.Occasion)
+if (
+    selectedFields.includes("occasion") &&
+    row.Occasion !== undefined
+) {
     product.occasion = row.Occasion;
+}
 
-if (row.Description)
+if (
+    selectedFields.includes("description") &&
+    row.Description !== undefined
+) {
     product.description = row.Description;
+}
 
-if (row.Price)
+if (
+    selectedFields.includes("price") &&
+    row.Price !== undefined
+) {
     product.price = Number(row.Price);
-const allSizes = [
+}
+  
+  const allSizes = [
     "S","M","L","XL","XXL",
     "30","32","34","36","38","40"
 ];
