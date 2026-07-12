@@ -532,7 +532,6 @@ app.get("/download-sample-excel", (req, res) => {
 
     const filePath = path.join(
         __dirname,
-        "sample",
         "Product_Update_Template.xlsx"
     );
 
