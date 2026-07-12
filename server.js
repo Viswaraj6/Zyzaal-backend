@@ -306,16 +306,34 @@ app.post(
                     workbook.SheetNames[0]
                 ];
 
-            const rows =
-                XLSX.utils.sheet_to_json(sheet);
+           const rows = XLSX.utils.sheet_to_json(sheet);
 
-            console.log("Rows :", rows.length);
+let updated = 0;
+let notFound = 0;
 
-            res.json({
-                success: true,
-                rows: rows.length
-            });
+for (const row of rows) {
 
+    const styleNo = String(row.StyleNo || "").trim();
+
+    if (!styleNo) continue;
+
+    const product = await Product.findOne({ styleNo });
+
+    if (!product) {
+        notFound++;
+        continue;
+    }
+
+    updated++;
+}
+
+return res.json({
+    success: true,
+    total: rows.length,
+    updated,
+    notFound
+});
+          
         } catch (err) {
 
             console.log(err);
