@@ -394,43 +394,47 @@ if (
     product.price = Number(row.Price);
 }
   
-  const allSizes = [
-    "S","M","L","XL","XXL",
-    "30","32","34","36","38","40"
-];
+ if (selectedFields.includes("stock")) {
 
-for (const size of allSizes) {
+    const allSizes = [
+        "S","M","L","XL","XXL",
+        "30","32","34","36","38","40"
+    ];
 
-    if (row[size] === undefined) continue;
+    for (const size of allSizes) {
 
-    const stock = Number(row[size]);
+        if (row[size] === undefined) continue;
 
-    const sizeObj = product.sizeStock.find(
-        s => s.size === size
-    );
+        const stock = Number(row[size]);
 
-    if (sizeObj) {
+        const sizeObj = product.sizeStock.find(
+            s => s.size === size
+        );
 
-        sizeObj.stock = stock;
+        if (sizeObj) {
 
-    } else {
+            sizeObj.stock = stock;
 
-        product.sizeStock.push({
-            size,
-            stock,
-            sku: "",
-            image: ""
-        });
+        } else {
+
+            product.sizeStock.push({
+                size,
+                stock,
+                sku: "",
+                image: ""
+            });
+
+        }
 
     }
 
-}
-product.stock = product.sizeStock.reduce(
-    (total, item) => total + Number(item.stock || 0),
-    0
-);
+    product.stock = product.sizeStock.reduce(
+        (total, item) => total + Number(item.stock || 0),
+        0
+    );
 
-product.markModified("sizeStock");
+    product.markModified("sizeStock");
+}
   
 await product.save();
   
