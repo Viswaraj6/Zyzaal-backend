@@ -118,6 +118,10 @@ console.log(
     break;
 
 }
+if (!newestInvoiceId) {
+    newestInvoiceId = invoice.invoice_id;
+}
+        
     log(`Invoice : ${invoice.invoice_number}`);
 
         // 3. Get invoice details
