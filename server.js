@@ -278,6 +278,10 @@ app.post("/add-product", checkAdmin, async (req, res) => {
     });
   }
 });
+app.post("/excel-update", checkAdmin, async (req, res) => {
+
+});
+
 app.post("/check-user", async (req, res) => {
 
   const { phone } = req.body;
