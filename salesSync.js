@@ -63,6 +63,8 @@ let hasMore = true;
 let stopSync = false;
 
 let newestInvoiceId = null;
+let newestInvoiceDate = null;
+        
 while (hasMore && !stopSync) {
 
     const res = await callWithRetry(() =>
