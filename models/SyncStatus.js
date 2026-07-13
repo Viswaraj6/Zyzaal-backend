@@ -10,6 +10,7 @@ const SyncStatusSchema = new mongoose.Schema({
     lastInvoiceId: String,
 
     lastSyncTime: Date,
+    lastInvoiceDate: Date,
 
     // Full Sync Resume
     lastItemIndex: {
