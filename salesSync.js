@@ -243,9 +243,7 @@ if (newestInvoiceId) {
 
     status.lastInvoiceId = newestInvoiceId;
     
-    status.lastInvoiceDate = new Date(
-    invoices[0].created_time
-);
+   status.lastInvoiceDate = newestInvoiceDate;
 
     status.lastSyncTime = new Date();
 
