@@ -170,7 +170,11 @@ if (!newestInvoiceId) {
 
     let product = await Product.findOne({ styleNo });
 
-    console.log(product);
+    console.log(
+    product.styleNo,
+    soldSize,
+    product.stock
+);
        
          if (!product) {
 
