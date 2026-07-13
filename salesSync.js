@@ -234,6 +234,10 @@ log(
 if (newestInvoiceId) {
 
     status.lastInvoiceId = newestInvoiceId;
+    
+    status.lastInvoiceDate = new Date(
+    invoices[0].created_time
+);
 
     status.lastSyncTime = new Date();
 
