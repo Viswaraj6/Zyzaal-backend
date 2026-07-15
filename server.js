@@ -602,25 +602,6 @@ app.get("/products/:id", async (req, res) => {
     }
 
 });
-app.get("/products/category/:category", async (req, res) => {
-
-    try{
-
-        const products = await Product.find({
-            category: req.params.category
-        });
-
-        res.json(products);
-
-    }catch(err){
-
-        res.status(500).json({
-            success:false
-        });
-
-    }
-
-});
 
 app.get("/download-sample-excel", (req, res) => {
 
