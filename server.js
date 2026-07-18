@@ -546,8 +546,6 @@ updateData.email = req.body.email;
 if(req.body.gender !== undefined)
 updateData.gender = req.body.gender;
 
-if(req.body.address !== undefined)
-updateData.address = req.body.address;
 
 await User.updateOne(
 {
