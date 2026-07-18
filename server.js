@@ -616,6 +616,35 @@ app.get("/user/:phone/address", async (req, res) => {
   }
 
 });
+
+  app.delete("/user/:phone/address/:id", async (req, res) => {
+
+  try {
+
+    await User.updateOne(
+      { phone: req.params.phone },
+      {
+        $pull: {
+          addresses: {
+            _id: req.params.id
+          }
+        }
+      }
+    );
+
+    res.json({
+      success: true
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false
+    });
+
+  }
+
+});
 app.get("/products", async (req, res) => {
   try {
 
