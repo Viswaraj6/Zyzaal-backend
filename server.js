@@ -567,6 +567,35 @@ res.status(500).json({
 }
 
 });
+
+app.put("/user/:phone/address", async (req, res) => {
+
+  try {
+
+    await User.updateOne(
+      { phone: req.params.phone },
+      {
+        $push: {
+          addresses: req.body
+        }
+      }
+    );
+
+    res.json({
+      success: true
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+      success: false
+    });
+
+  }
+
+});
 app.get("/products", async (req, res) => {
   try {
 
