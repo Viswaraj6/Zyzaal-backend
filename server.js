@@ -645,6 +645,39 @@ app.get("/user/:phone/address", async (req, res) => {
   }
 
 });
+
+    app.put("/user/:phone/address/:id", async (req, res) => {
+
+  try {
+
+    await User.updateOne(
+      {
+        phone: req.params.phone,
+        "addresses._id": req.params.id
+      },
+      {
+        $set: {
+          "addresses.$.name": req.body.name,
+          "addresses.$.phone": req.body.phone,
+          "addresses.$.pincode": req.body.pincode,
+          "addresses.$.city": req.body.city,
+          "addresses.$.state": req.body.state,
+          "addresses.$.address": req.body.address
+        }
+      }
+    );
+
+    res.json({ success: true });
+
+  } catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({ success: false });
+
+  }
+
+});
 app.get("/products", async (req, res) => {
   try {
 
