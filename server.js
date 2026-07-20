@@ -910,11 +910,16 @@ app.post("/order", async(req,res)=>{
     const orderNumber =
       String(counter.value).padStart(5,"0");
 
-    const order = new Order({
-      ...req.body,
-      orderNumber
-    });
+    const now = new Date();
 
+const order = new Order({
+  ...req.body,
+  orderNumber,
+
+  statusHistory: {
+    confirmed: now
+  }
+});
     await order.save();
     const io = req.app.get("io");
 
