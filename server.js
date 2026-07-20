@@ -243,8 +243,13 @@ const OrderSchema = new mongoose.Schema({
   status: {
     type: String,
     default: "Pending"
-  }
-
+  },
+  statusHistory: {
+  confirmed: Date,
+  processing: Date,
+  shipped: Date,
+  delivered: Date
+}
 }, {
   timestamps: true
 });
