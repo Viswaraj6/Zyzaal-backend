@@ -1060,6 +1060,19 @@ app.put("/orders/:id", checkAdmin, async (req, res) => {
     const updateData = {
   status: req.body.status
 };
+    const now = new Date();
+
+if (req.body.status === "Processing") {
+  updateData["statusHistory.processing"] = now;
+}
+
+if (req.body.status === "Shipped") {
+  updateData["statusHistory.shipped"] = now;
+}
+
+if (req.body.status === "Delivered") {
+  updateData["statusHistory.delivered"] = now;
+}
 
 if(req.body.deliveryDate){
   updateData.deliveryDate =
