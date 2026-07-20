@@ -1081,9 +1081,10 @@ if(req.body.deliveryDate){
 
 await Order.findByIdAndUpdate(
   req.params.id,
-  updateData
+  {
+    $set: updateData
+  }
 );
-
     res.json({
       success: true,
       message: "Updated ✅"
