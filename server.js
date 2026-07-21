@@ -581,7 +581,30 @@ app.post("/wishlist", async (req, res) => {
     }
 
 });
+// Get Wishlist
+app.get("/wishlist/:phone", async (req, res) => {
 
+    try {
+
+        const user = await User.findOne({
+            phone: req.params.phone
+        }).populate("wishlist");
+
+        if (!user) {
+            return res.json([]);
+        }
+
+        res.json(user.wishlist);
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json([]);
+
+    }
+
+});
 app.put("/user/:phone", async(req,res)=>{
 
 try{
