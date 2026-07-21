@@ -112,7 +112,10 @@ gender:String,
   },
 
   password: String,
-
+wishlist: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product"
+}],
   createdAt: {
     type: Date,
     default: Date.now
