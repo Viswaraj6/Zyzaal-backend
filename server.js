@@ -539,6 +539,49 @@ app.get("/user/:phone", async (req,res)=>{
  res.json(user);
 
 });
+
+// ================= WISHLIST =================
+
+// Add Wishlist
+app.post("/wishlist", async (req, res) => {
+
+    try {
+
+        const { phone, productId } = req.body;
+
+        const user = await User.findOne({ phone });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        if (!user.wishlist.includes(productId)) {
+
+            user.wishlist.push(productId);
+
+            await user.save();
+
+        }
+
+        res.json({
+            success: true
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false
+        });
+
+    }
+
+});
+
 app.put("/user/:phone", async(req,res)=>{
 
 try{
