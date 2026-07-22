@@ -213,7 +213,13 @@ if (
 }
      
         let product = await Product.findOne({ styleNo });
-    
+ 
+      if (product && !product.createdAt) {
+    product.createdAt = item.created_time
+        ? new Date(item.created_time)
+        : new Date();
+}
+  
         if (!product) {
 
            product = new Product({
