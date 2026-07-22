@@ -298,9 +298,9 @@ product.lastSync = syncStartedAt;
 console.log("Before Save");
 console.log(product.primaryImage);
 console.log(product.images);
-     
+     console.log("Before Save createdAt:", product.createdAt);
        await product.save();
-   
+   console.log("After Save createdAt:", product.createdAt);
   status.lastItemIndex = i + 1;
 
 status.lastItemId = item.item_id;
