@@ -161,6 +161,7 @@ if (item.name === "02261") {
     console.log(JSON.stringify(item, null, 2));
      console.log(Object.keys(item)); 
     console.log("ALL FIELDS:", Object.keys(item));
+   console.log("CREATED TIME:", item.created_time);
     console.log("ITEM DATA END");
 }
   const itemCode = (item.name || "").trim();
