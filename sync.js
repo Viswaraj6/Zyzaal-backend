@@ -233,7 +233,9 @@ if (
     stock: 0,
 
     category: item.category_name,
-
+createdAt: item.created_time
+    ? new Date(item.created_time)
+    : new Date(),
     sizes:
         category.includes("PANT") ||
         category.includes("JEANS")
