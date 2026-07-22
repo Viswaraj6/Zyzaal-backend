@@ -156,7 +156,7 @@ if (item.name === "02261") {
     console.log("==================================");
 }
    
- {
+ if (item.sku === "SS-LPUR-S(25001)"){
     console.log("ITEM DATA START");
     console.log(JSON.stringify(item, null, 2));
      console.log(Object.keys(item)); 
