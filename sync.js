@@ -214,7 +214,10 @@ if (
 }
      
         let product = await Product.findOne({ styleNo });
- 
+  
+ console.log("Schema createdAt:", Product.schema.paths.createdAt);
+console.log("Zoho created_time:", item.created_time);
+  
      if (product && !product.createdAt) {
     product.createdAt = item.created_time
         ? new Date(item.created_time)
