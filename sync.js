@@ -219,9 +219,7 @@ if (
 console.log("Zoho created_time:", item.created_time);
   
      if (product && !product.createdAt) {
-    product.createdAt = item.created_time
-        ? new Date(item.created_time)
-        : new Date();
+  product.createdAt = new Date("2025-01-01");
 
     product.markModified("createdAt");
 
