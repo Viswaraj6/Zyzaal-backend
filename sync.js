@@ -135,7 +135,7 @@ for (let i = startIndex; i < allItems.length; i++) {
   let locations = [];
 
 try {
-
+console.log("Calling Location API:", item.sku);
     const locationRes = await callWithRetry(() =>
         axios.get(
             `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
