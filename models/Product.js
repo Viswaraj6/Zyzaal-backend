@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const ProductSchema = new mongoose.Schema({
-
   name: String,
   styleNo: String,
   price: Number,
@@ -21,21 +20,18 @@ const ProductSchema = new mongoose.Schema({
 
   sizes: [String],
 
-  sizeStock:[
-    {
-      size:String,
-      stock:Number,
-      sku:String,
-      image:String
-    }
-  ],
+ sizeStock: [
+  {
+    size: String,
+    stock: Number,
+    sku: String,
+    image: String
+  }
+],
 
-  category:String,
-
-  lastSync:Date
-
-},{
-  timestamps:true
+  category: String,
+  
+  lastSync: Date
 });
 
 module.exports = mongoose.model("Product", ProductSchema);
