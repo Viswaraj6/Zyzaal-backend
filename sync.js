@@ -132,36 +132,23 @@ for (let i = startIndex; i < allItems.length; i++) {
     setTimeout(resolve,1000)
 );
 
- let locations = [];
+    let locations = [];
 
-try {
-
-    console.log("Calling Location API:", item.sku);
-
-    const locationRes = await callWithRetry(() =>
-        axios.get(
-            `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
-            {
-                params: {
-                    organization_id: process.env.ZOHO_ORGANIZATION_ID
-                },
-                headers: {
-                    Authorization: `Zoho-oauthtoken ${token}`
-                }
+const locationRes = await callWithRetry(() =>
+    axios.get(
+        `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
+        {
+            params: {
+                organization_id: process.env.ZOHO_ORGANIZATION_ID
+            },
+            headers: {
+                Authorization: `Zoho-oauthtoken ${token}`
             }
-        )
-    );
+        }
+    )
+);
 
-    locations =
-        locationRes.data.item_location_details.locations || [];
-
-} catch (err) {
-
-    console.log("Location API ERROR:", err.response?.data || err.message);
-
-    continue;
-
-}
+locations = locationRes.data.item_location_details.locations;
   
 
 if (item.name === "02261") {
@@ -169,12 +156,11 @@ if (item.name === "02261") {
     console.log("==================================");
 }
    
- if (item.sku === "SS-LPUR-S(25001)"){
+if (item.sku === "SS-LPUR-S(25001)") {
     console.log("ITEM DATA START");
     console.log(JSON.stringify(item, null, 2));
      console.log(Object.keys(item)); 
     console.log("ALL FIELDS:", Object.keys(item));
-   console.log("CREATED TIME:", item.created_time);
     console.log("ITEM DATA END");
 }
   const itemCode = (item.name || "").trim();
@@ -227,24 +213,7 @@ if (
 }
      
         let product = await Product.findOne({ styleNo });
-  
- console.log("Schema createdAt:", Product.schema.paths.createdAt);
-console.log("Zoho created_time:", item.created_time);
-  
-     if (product && !product.createdAt) {
- product.createdAt = item.created_time
-    ? new Date(item.created_time)
-    : new Date();
-
-    product.markModified("createdAt");
-
-    console.log(
-        "SET CREATED AT:",
-        styleNo,
-        product.createdAt
-    );
-}
-  
+    
         if (!product) {
 
            product = new Product({
@@ -258,9 +227,7 @@ console.log("Zoho created_time:", item.created_time);
     stock: 0,
 
     category: item.category_name,
-createdAt: item.created_time
-    ? new Date(item.created_time)
-    : new Date(),
+
     sizes:
         category.includes("PANT") ||
         category.includes("JEANS")
@@ -314,9 +281,9 @@ product.lastSync = syncStartedAt;
 console.log("Before Save");
 console.log(product.primaryImage);
 console.log(product.images);
-     console.log("Before Save createdAt:", product.createdAt);
+     
        await product.save();
-   console.log("After Save createdAt:", product.createdAt);
+   
   status.lastItemIndex = i + 1;
 
 status.lastItemId = item.item_id;
