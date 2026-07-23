@@ -132,23 +132,34 @@ for (let i = startIndex; i < allItems.length; i++) {
     setTimeout(resolve,1000)
 );
 
-    let locations = [];
+  let locations = [];
 
-const locationRes = await callWithRetry(() =>
-    axios.get(
-        `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
-        {
-            params: {
-                organization_id: process.env.ZOHO_ORGANIZATION_ID
-            },
-            headers: {
-                Authorization: `Zoho-oauthtoken ${token}`
+try {
+
+    const locationRes = await callWithRetry(() =>
+        axios.get(
+            `https://pos.zoho.in/posapi/api/v1/items/${item.item_id}/locationdetails`,
+            {
+                params: {
+                    organization_id: process.env.ZOHO_ORGANIZATION_ID
+                },
+                headers: {
+                    Authorization: `Zoho-oauthtoken ${token}`
+                }
             }
-        }
-    )
-);
+        )
+    );
 
-locations = locationRes.data.item_location_details.locations;
+    locations =
+        locationRes.data.item_location_details.locations || [];
+
+} catch (err) {
+
+    console.log("Skip Location API:", item.sku);
+
+    continue;
+
+}
   
 
 if (item.name === "02261") {
