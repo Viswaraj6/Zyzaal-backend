@@ -1313,6 +1313,28 @@ app.get("/sync-status", async (req, res) => {
     });
 
 });
+
+app.get("/api/sales-summary", async (req, res) => {
+
+    try {
+
+        const data = await SalesSummary.find()
+            .sort({ date: -1, store: 1 });
+
+        res.json(data);
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch sales summary"
+        });
+
+    }
+
+});
 /* ================= START ================= */
 server.listen(process.env.PORT || 5000, () => {
   console.log("Server running 🚀");
