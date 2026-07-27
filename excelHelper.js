@@ -2,7 +2,7 @@
 const XLSX = require("xlsx");
 const fs = require("fs");
 const path = require("path");
-const FILE = "Sales_Report.xlsx";
+const FILE = path.join(__dirname, "Sales_Report.xlsx");
 const SHEET = "DailySummary";
 
 async function updateExcel(data) {
