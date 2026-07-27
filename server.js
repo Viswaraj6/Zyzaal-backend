@@ -88,6 +88,10 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 const Product = require("./models/Product");
 global.Product = Product;
 
+const SalesSummary = require("./models/SalesSummary");
+
+global.SalesSummary = SalesSummary;
+
 const User = mongoose.model("User", {
   name: String,
   email: String,
