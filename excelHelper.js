@@ -68,10 +68,12 @@ async function updateExcel(data) {
         workbook.SheetNames.push(SHEET);
     }
 
-    XLSX.writeFile(workbook, FILE);
+   XLSX.writeFile(workbook, FILE);
 
-    console.log("Excel Updated");
-
+console.log("Excel Updated");
+console.log("Excel File:", FILE);
+console.log("File Exists:", fs.existsSync(FILE));
+    
 }
 
 module.exports = {
