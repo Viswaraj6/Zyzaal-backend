@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { getAccessToken } = require("./zoho");
 const SyncStatus = require("./models/SyncStatus");
-
+const SalesSummary = require("./models/SalesSummary");
 function log(msg){
 
     console.log(msg);
