@@ -87,7 +87,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 
 const Product = require("./models/Product");
 global.Product = Product;
-
+const Customer = require("./models/Customer");
 const SalesSummary = require("./models/SalesSummary");
 
 global.SalesSummary = SalesSummary;
