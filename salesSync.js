@@ -241,7 +241,19 @@ else {
 
 }
 }
-        
+const inv = detail.data.invoice;
+
+await updateExcel({
+    date: inv.date,
+    store: inv.location_name || "Unknown",
+    sales: Number(inv.total || 0),
+    cash: 0,
+    card: 0,
+    qr: 0,
+    wallet: 0,
+    creditNote: 0,
+    paymentReceived: Number(inv.payment_made || 0)
+});        
 log(
 `Invoice Synced : ${invoice.invoice_number}`
 );
