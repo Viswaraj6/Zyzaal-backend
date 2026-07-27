@@ -243,6 +243,26 @@ else {
 }
 const inv = detail.data.invoice;
 
+const summaryDate = inv.date;
+const summaryStore = inv.location_name || "Unknown";
+
+let summary = await SalesSummary.findOne({
+    date: summaryDate,
+    store: summaryStore
+});
+
+if (!summary) {
+    summary = new SalesSummary({
+        date: summaryDate,
+        store: summaryStore
+    });
+}
+
+summary.sales += Number(inv.total || 0);
+summary.paymentReceived += Number(inv.payment_made || 0);
+
+await summary.save();
+
 log(
 `Invoice Synced : ${invoice.invoice_number}`
 );
