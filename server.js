@@ -1033,7 +1033,46 @@ app.get("/pos/customers", async (req, res) => {
     }
 
 });
+// Search POS Customers
+app.get("/pos/customers/search", async (req, res) => {
 
+    try {
+
+        const q = (req.query.q || "").trim();
+
+        if (!q) {
+            return res.json({
+                success: true,
+                customers: []
+            });
+        }
+
+        const customers = await Customer.find({
+            $or: [
+                { name: { $regex: q, $options: "i" } },
+                { mobile: { $regex: q, $options: "i" } }
+            ]
+        })
+        .limit(10)
+        .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            customers
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
 /* ================= PAYMENT ================= */
 
 app.post("/create-order", async (req, res) => {
