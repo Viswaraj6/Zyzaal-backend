@@ -952,6 +952,63 @@ product.stock =
   }
 
 });
+
+/* ================= POS CUSTOMERS ================= */
+
+// Add Customer
+app.post("/pos/customers", async (req, res) => {
+
+    try {
+
+        const { name, mobile, email, address, city, pincode, gstNo } = req.body;
+
+        if (!name || !mobile) {
+            return res.status(400).json({
+                success: false,
+                message: "Name and Mobile are required"
+            });
+        }
+
+        // Duplicate Mobile Check
+        const existing = await Customer.findOne({ mobile });
+
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                message: "Customer already exists"
+            });
+        }
+
+        const customer = new Customer({
+            name,
+            mobile,
+            email,
+            address,
+            city,
+            pincode,
+            gstNo
+        });
+
+        await customer.save();
+
+        res.json({
+            success: true,
+            customer
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
+
 /* ================= PAYMENT ================= */
 
 app.post("/create-order", async (req, res) => {
