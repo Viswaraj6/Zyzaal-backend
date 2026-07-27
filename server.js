@@ -1008,6 +1008,31 @@ app.post("/pos/customers", async (req, res) => {
     }
 
 });
+// Get All POS Customers
+app.get("/pos/customers", async (req, res) => {
+
+    try {
+
+        const customers = await Customer.find()
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            customers
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
 
 /* ================= PAYMENT ================= */
 
