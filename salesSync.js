@@ -242,10 +242,56 @@ else {
 }
 }
 const inv = detail.data.invoice;
-        const paymentsRes = await callWithRetry(() =>
-            const payments = paymentsRes.data.customerpayments || [];
+
+const summaryDate = inv.date;
+const summaryStore = inv.location_name || "Unknown";
+
+let summary = await SalesSummary.findOne({
+    date: summaryDate,
+    store: summaryStore
+});
+
+if (!summary) {
+    summary = new SalesSummary({
+        date: summaryDate,
+        store: summaryStore
+    });
+}
+
+summary.sales += Number(inv.total || 0);
+
+// Get Customer Payments
+const paymentsRes = await callWithRetry(() =>
+    axios.get(
+        "https://www.zohoapis.in/inventory/v1/customerpayments",
+        {
+            params: {
+                organization_id: process.env.ZOHO_ORGANIZATION_ID,
+                invoice_id: inv.invoice_id
+            },
+            headers: {
+                Authorization: `Zoho-oauthtoken ${token}`
+            }
+        }
+    )
+);
+
+console.log(
+    "CUSTOMER PAYMENTS =>",
+    JSON.stringify(paymentsRes.data, null, 2)
+);
+
+const payments = paymentsRes.data.customerpayments || [];
 
 for (const payment of payments) {
+
+    // If invoice_id exists, process only current invoice
+    if (
+        payment.invoice_id &&
+        payment.invoice_id !== inv.invoice_id
+    ) {
+        continue;
+    }
 
     const mode = (payment.payment_mode || "").toLowerCase();
     const amount = Number(payment.amount || 0);
@@ -275,44 +321,8 @@ for (const payment of payments) {
         summary.wallet += amount;
     }
 }
-    axios.get(
-        "https://www.zohoapis.in/inventory/v1/customerpayments",
-        {
-            params: {
-                organization_id: process.env.ZOHO_ORGANIZATION_ID,
-                invoice_id: inv.invoice_id
-            },
-            headers: {
-                Authorization: `Zoho-oauthtoken ${token}`
-            }
-        }
-    )
-);
-
-console.log(
-    "CUSTOMER PAYMENTS =>",
-    JSON.stringify(paymentsRes.data, null, 2)
-);
-console.log(JSON.stringify(inv, null, 2));
-const summaryDate = inv.date;
-const summaryStore = inv.location_name || "Unknown";
-
-let summary = await SalesSummary.findOne({
-    date: summaryDate,
-    store: summaryStore
-});
-
-if (!summary) {
-    summary = new SalesSummary({
-        date: summaryDate,
-        store: summaryStore
-    });
-}
-
-summary.sales += Number(inv.total || 0);
 
 await summary.save();
-
 log(
 `Invoice Synced : ${invoice.invoice_number}`
 );
