@@ -282,9 +282,9 @@ console.log(
 );
 
 const payments = (paymentsRes.data.customerpayments || []).filter(
-    p => p.invoice_numbers === inv.invoice_number
+    p => (p.invoice_numbers || "").trim() === (inv.invoice_number || "").trim()
 );
-console.log("Payments Count:", payments.length);
+        console.log("Payments Count:", payments.length);
 
 for (const payment of payments) {
     console.log({
