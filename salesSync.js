@@ -243,6 +243,38 @@ else {
 }
 const inv = detail.data.invoice;
         const paymentsRes = await callWithRetry(() =>
+            const payments = paymentsRes.data.customerpayments || [];
+
+for (const payment of payments) {
+
+    const mode = (payment.payment_mode || "").toLowerCase();
+    const amount = Number(payment.amount || 0);
+
+    summary.paymentReceived += amount;
+
+    if (mode.includes("cash")) {
+        summary.cash += amount;
+    }
+    else if (
+        mode.includes("card") ||
+        mode.includes("credit") ||
+        mode.includes("debit")
+    ) {
+        summary.card += amount;
+    }
+    else if (
+        mode.includes("upi") ||
+        mode.includes("qr") ||
+        mode.includes("gpay") ||
+        mode.includes("phonepe") ||
+        mode.includes("paytm")
+    ) {
+        summary.qr += amount;
+    }
+    else if (mode.includes("wallet")) {
+        summary.wallet += amount;
+    }
+}
     axios.get(
         "https://www.zohoapis.in/inventory/v1/customerpayments",
         {
