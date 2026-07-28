@@ -136,14 +136,14 @@ if (
     break;
 
 }
-if (!newestInvoiceId) {
+const invoiceDate = new Date(invoice.created_time);
 
+if (
+    !newestInvoiceDate ||
+    invoiceDate > newestInvoiceDate
+) {
     newestInvoiceId = invoice.invoice_id;
-
-    newestInvoiceDate = new Date(
-        invoice.created_time
-    );
-
+    newestInvoiceDate = invoiceDate;
 }
         
     log(`Invoice : ${invoice.invoice_number}`);
