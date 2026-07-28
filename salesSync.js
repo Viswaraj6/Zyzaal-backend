@@ -259,7 +259,7 @@ if (!summary) {
 }
 
 summary.sales += Number(inv.total || 0);
-
+summary.creditNote += Number(inv.credits_applied || 0);
 // Get Customer Payments
 const paymentsRes = await callWithRetry(() =>
     axios.get(
