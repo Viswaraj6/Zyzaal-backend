@@ -84,7 +84,14 @@ while (hasMore && !stopSync) {
     );
 
     const invoices = res.data.invoices;
+console.log("===== Invoice Order =====");
 
+for (const inv of invoices.slice(0, 10)) {
+    console.log(
+        inv.invoice_number,
+        inv.created_time
+    );
+}
     hasMore = res.data.page_context.has_more_page;
 
     page++;
