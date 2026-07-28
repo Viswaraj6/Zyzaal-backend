@@ -297,14 +297,7 @@ for (const payment of payments) {
 }
 for (const payment of payments) {
 
-    // If invoice_id exists, process only current invoice
-    if (
-        payment.invoice_id &&
-        payment.invoice_id !== inv.invoice_id
-    ) {
-        continue;
-    }
-
+   
     const mode = (payment.payment_mode || "").toLowerCase();
     const amount = Number(payment.amount || 0);
 
