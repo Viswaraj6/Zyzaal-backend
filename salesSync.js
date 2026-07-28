@@ -328,6 +328,7 @@ for (const payment of payments) {
 }
 
 await summary.save();
+        console.log("Summary Saved:", summaryDate, summaryStore);
 log(
 `Invoice Synced : ${invoice.invoice_number}`
 );
