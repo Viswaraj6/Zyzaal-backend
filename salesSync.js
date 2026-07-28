@@ -242,6 +242,25 @@ else {
 }
 }
 const inv = detail.data.invoice;
+        const paymentsRes = await callWithRetry(() =>
+    axios.get(
+        "https://www.zohoapis.in/inventory/v1/customerpayments",
+        {
+            params: {
+                organization_id: process.env.ZOHO_ORGANIZATION_ID,
+                invoice_id: inv.invoice_id
+            },
+            headers: {
+                Authorization: `Zoho-oauthtoken ${token}`
+            }
+        }
+    )
+);
+
+console.log(
+    "CUSTOMER PAYMENTS =>",
+    JSON.stringify(paymentsRes.data, null, 2)
+);
 console.log(JSON.stringify(inv, null, 2));
 const summaryDate = inv.date;
 const summaryStore = inv.location_name || "Unknown";
