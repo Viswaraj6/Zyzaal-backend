@@ -84,14 +84,7 @@ while (hasMore && !stopSync) {
     );
 
     const invoices = res.data.invoices;
-console.log("===== Invoice Order =====");
 
-for (const inv of invoices.slice(0, 10)) {
-    console.log(
-        inv.invoice_number,
-        inv.created_time
-    );
-}
     hasMore = res.data.page_context.has_more_page;
 
     page++;
@@ -143,14 +136,14 @@ if (
     break;
 
 }
-const invoiceDate = new Date(invoice.created_time);
+if (!newestInvoiceId) {
 
-if (
-    !newestInvoiceDate ||
-    invoiceDate > newestInvoiceDate
-) {
     newestInvoiceId = invoice.invoice_id;
-    newestInvoiceDate = invoiceDate;
+
+    newestInvoiceDate = new Date(
+        invoice.created_time
+    );
+
 }
         
     log(`Invoice : ${invoice.invoice_number}`);
@@ -266,76 +259,10 @@ if (!summary) {
 }
 
 summary.sales += Number(inv.total || 0);
-summary.creditNote += Number(inv.credits_applied || 0);
-// Get Customer Payments
-const paymentsRes = await callWithRetry(() =>
-    axios.get(
-        "https://www.zohoapis.in/inventory/v1/customerpayments",
-        {
-            params: {
-                organization_id: process.env.ZOHO_ORGANIZATION_ID,
-                invoice_id: inv.invoice_id
-            },
-            headers: {
-                Authorization: `Zoho-oauthtoken ${token}`
-            }
-        }
-    )
-);
-
-console.log(
-    "CUSTOMER PAYMENTS =>",
-    JSON.stringify(paymentsRes.data, null, 2)
-);
-
-const payments = (paymentsRes.data.customerpayments || []).filter(
-    p => (p.invoice_numbers || "").trim() === (inv.invoice_number || "").trim()
-);
-        console.log("Payments Count:", payments.length);
-
-for (const payment of payments) {
-    console.log({
-        payment_number: payment.payment_number,
-        invoice_id: payment.invoice_id,
-        invoice_numbers: payment.invoice_numbers,
-        payment_mode: payment.payment_mode,
-        amount: payment.amount
-    });
-}
-for (const payment of payments) {
-
-   
-    const mode = (payment.payment_mode || "").toLowerCase();
-    const amount = Number(payment.amount || 0);
-
-    summary.paymentReceived += amount;
-
-    if (mode.includes("cash")) {
-        summary.cash += amount;
-    }
-    else if (
-        mode.includes("card") ||
-        mode.includes("credit") ||
-        mode.includes("debit")
-    ) {
-        summary.card += amount;
-    }
-    else if (
-        mode.includes("upi") ||
-        mode.includes("qr") ||
-        mode.includes("gpay") ||
-        mode.includes("phonepe") ||
-        mode.includes("paytm")
-    ) {
-        summary.qr += amount;
-    }
-    else if (mode.includes("wallet")) {
-        summary.wallet += amount;
-    }
-}
+summary.paymentReceived += Number(inv.payment_made || 0);
 
 await summary.save();
-        console.log("Summary Saved:", summaryDate, summaryStore);
+
 log(
 `Invoice Synced : ${invoice.invoice_number}`
 );
@@ -350,7 +277,7 @@ if (newestInvoiceId) {
     status.lastSyncTime = new Date();
 
     await status.save();
-console.log("Status Saved:", status);
+
     console.log(
         "Last Invoice Updated:",
         newestInvoiceId
