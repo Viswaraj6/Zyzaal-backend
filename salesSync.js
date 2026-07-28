@@ -242,7 +242,7 @@ else {
 }
 }
 const inv = detail.data.invoice;
-
+console.log(JSON.stringify(inv, null, 2));
 const summaryDate = inv.date;
 const summaryStore = inv.location_name || "Unknown";
 
