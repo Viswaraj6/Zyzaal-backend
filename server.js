@@ -1471,11 +1471,7 @@ app.get("/api/sales-summary-csv", async (req, res) => {
         });
 
         res.setHeader("Content-Type", "text/csv");
-       res.setHeader("Content-Type", "text/csv");
-res.send(csv);
-
-        res.send(csv);
-
+       
     } catch (err) {
 
         console.log(err);
