@@ -1456,6 +1456,36 @@ app.get("/api/sales-summary", async (req, res) => {
     }
 
 });
+app.get("/api/sales-summary-csv", async (req, res) => {
+    try {
+
+        const data = await SalesSummary.find()
+            .sort({ date: -1, store: 1 });
+
+        let csv =
+"Date,Store,Sales,Cash,Card,QR,Wallet,CreditNote,PaymentReceived\n";
+
+        data.forEach(item => {
+            csv +=
+`${item.date},${item.store},${item.sales},${item.cash},${item.card},${item.qr},${item.wallet},${item.creditNote},${item.paymentReceived}\n`;
+        });
+
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=SalesSummary.csv"
+        );
+
+        res.send(csv);
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).send("Error");
+
+    }
+});
 /* ================= START ================= */
 server.listen(process.env.PORT || 5000, () => {
   console.log("Server running 🚀");
