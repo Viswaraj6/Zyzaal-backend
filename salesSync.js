@@ -261,6 +261,38 @@ if (!summary) {
 summary.sales += Number(inv.total || 0);
 summary.paymentReceived += Number(inv.payment_made || 0);
 
+// Payment Mode
+const paymentMode = (
+    inv.payment_options?.payment_mode ||
+    inv.payment_mode ||
+    ""
+).toLowerCase();
+
+const amount = Number(inv.payment_made || inv.total || 0);
+
+if (paymentMode.includes("cash")) {
+    summary.cash += amount;
+}
+else if (
+    paymentMode.includes("card") ||
+    paymentMode.includes("credit card") ||
+    paymentMode.includes("debit")
+) {
+    summary.card += amount;
+}
+else if (
+    paymentMode.includes("upi") ||
+    paymentMode.includes("qr") ||
+    paymentMode.includes("gpay") ||
+    paymentMode.includes("phonepe") ||
+    paymentMode.includes("paytm")
+) {
+    summary.qr += amount;
+}
+else if (paymentMode.includes("wallet")) {
+    summary.wallet += amount;
+}
+
 await summary.save();
 
 log(
