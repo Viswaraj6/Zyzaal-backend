@@ -282,7 +282,17 @@ console.log(
 );
 
 const payments = paymentsRes.data.customerpayments || [];
+console.log("Payments Count:", payments.length);
 
+for (const payment of payments) {
+    console.log({
+        payment_number: payment.payment_number,
+        invoice_id: payment.invoice_id,
+        invoice_numbers: payment.invoice_numbers,
+        payment_mode: payment.payment_mode,
+        amount: payment.amount
+    });
+}
 for (const payment of payments) {
 
     // If invoice_id exists, process only current invoice
