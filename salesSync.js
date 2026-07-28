@@ -281,7 +281,9 @@ console.log(
     JSON.stringify(paymentsRes.data, null, 2)
 );
 
-const payments = paymentsRes.data.customerpayments || [];
+const payments = (paymentsRes.data.customerpayments || []).filter(
+    p => p.invoice_numbers === inv.invoice_number
+);
 console.log("Payments Count:", payments.length);
 
 for (const payment of payments) {
