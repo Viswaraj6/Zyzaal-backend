@@ -342,7 +342,7 @@ if (newestInvoiceId) {
     status.lastSyncTime = new Date();
 
     await status.save();
-
+console.log("Status Saved:", status);
     console.log(
         "Last Invoice Updated:",
         newestInvoiceId
