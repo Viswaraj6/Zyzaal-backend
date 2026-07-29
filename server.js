@@ -87,6 +87,10 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 
 const Product = require("./models/Product");
 global.Product = Product;
+const Customer = require("./models/Customer");
+const SalesSummary = require("./models/SalesSummary");
+
+global.SalesSummary = SalesSummary;
 
 const User = mongoose.model("User", {
   name: String,
@@ -948,6 +952,127 @@ product.stock =
   }
 
 });
+
+/* ================= POS CUSTOMERS ================= */
+
+// Add Customer
+app.post("/pos/customers", async (req, res) => {
+
+    try {
+
+        const { name, mobile, email, address, city, pincode, gstNo } = req.body;
+
+        if (!name || !mobile) {
+            return res.status(400).json({
+                success: false,
+                message: "Name and Mobile are required"
+            });
+        }
+
+        // Duplicate Mobile Check
+        const existing = await Customer.findOne({ mobile });
+
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                message: "Customer already exists"
+            });
+        }
+
+        const customer = new Customer({
+            name,
+            mobile,
+            email,
+            address,
+            city,
+            pincode,
+            gstNo
+        });
+
+        await customer.save();
+
+        res.json({
+            success: true,
+            customer
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
+// Get All POS Customers
+app.get("/pos/customers", async (req, res) => {
+
+    try {
+
+        const customers = await Customer.find()
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            customers
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
+// Search POS Customers
+app.get("/pos/customers/search", async (req, res) => {
+
+    try {
+
+        const q = (req.query.q || "").trim();
+
+        if (!q) {
+            return res.json({
+                success: true,
+                customers: []
+            });
+        }
+
+        const customers = await Customer.find({
+            $or: [
+                { name: { $regex: q, $options: "i" } },
+                { mobile: { $regex: q, $options: "i" } }
+            ]
+        })
+        .limit(10)
+        .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            customers
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
 /* ================= PAYMENT ================= */
 
 app.post("/create-order", async (req, res) => {
@@ -1307,6 +1432,28 @@ app.get("/sync-status", async (req, res) => {
         sales,
         full
     });
+
+});
+
+app.get("/api/sales-summary", async (req, res) => {
+
+    try {
+
+        const data = await SalesSummary.find()
+            .sort({ date: -1, store: 1 });
+
+        res.json(data);
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch sales summary"
+        });
+
+    }
 
 });
 /* ================= START ================= */
