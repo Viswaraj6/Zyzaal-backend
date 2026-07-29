@@ -1071,6 +1071,59 @@ app.get("/pos/customers/search", async (req, res) => {
     }
 
 });
+// Edit POS Customers
+app.put("/pos/customers/:id", async (req, res) => {
+
+    try {
+
+        const { name, mobile, email, gstNo, address } = req.body;
+
+        if (!name)
+            return res.status(400).json({ message: "Customer Name Required" });
+
+        if (!/^\d{10}$/.test(mobile))
+            return res.status(400).json({ message: "Invalid Mobile Number" });
+
+        const customer = await Customer.findByIdAndUpdate(
+
+            req.params.id,
+
+            {
+                name,
+                mobile,
+                email,
+                gstNo,
+                address
+            },
+
+            { new: true }
+
+        );
+
+        if (!customer) {
+
+            return res.status(404).json({
+                message: "Customer Not Found"
+            });
+
+        }
+
+        res.json({
+            success: true,
+            customer
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            message: "Server Error"
+        });
+
+    }
+
+});
 /* ================= PAYMENT ================= */
 
 app.post("/create-order", async (req, res) => {
