@@ -12,7 +12,7 @@ const axios = require("axios");
 const multer = require("multer");
 const path = require("path");
 const XLSX = require("xlsx");
-const POSBill = require("./models/POSBill");
+
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -87,6 +87,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 
 const Product = require("./models/Product");
 global.Product = Product;
+const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
 
 
