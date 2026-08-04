@@ -1124,6 +1124,61 @@ app.put("/pos/customers/:id", async (req, res) => {
     }
 
 });
+/* ================= Pos Bill ================= */
+app.post("/pos/bill", async (req, res) => {
+
+    try {
+
+        let counter =
+            await Counter.findOne({ name: "posBill" });
+
+        if (!counter) {
+
+            counter = await Counter.create({
+                name: "posBill",
+                value: 0
+            });
+
+        }
+
+        counter.value++;
+
+        await counter.save();
+
+        const billNo =
+            "POS" + String(counter.value).padStart(6, "0");
+
+        const bill = new POSBill({
+
+            billNo,
+
+            ...req.body
+
+        });
+
+        await bill.save();
+
+        res.json({
+
+            success: true,
+
+            bill
+
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            success: false
+
+        });
+
+    }
+
+});
 /* ================= PAYMENT ================= */
 
 app.post("/create-order", async (req, res) => {
