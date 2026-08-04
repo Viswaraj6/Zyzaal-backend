@@ -1219,7 +1219,73 @@ app.post("/verify-payment", async (req, res) => {
     res.status(500).json({ error: "Verification failed ❌" });
   }
 });
+/* ================= POS BILL SAVE ================= */
 
+app.post("/pos/save-bill", async (req, res) => {
+
+    try {
+
+        let counter = await Counter.findOne({ name: "posbill" });
+
+        if (!counter) {
+
+            counter = await Counter.create({
+                name: "posbill",
+                value: 0
+            });
+
+        }
+
+        counter.value += 1;
+        await counter.save();
+
+        const billNo = "B" + String(counter.value).padStart(6, "0");
+
+        const bill = new POSBill({
+
+            billNo,
+
+            customer: req.body.customer || {},
+
+            items: req.body.items || [],
+
+            payments: req.body.payments || [],
+
+            total: req.body.total || 0,
+
+            discount: req.body.discount || 0,
+
+            tax: req.body.tax || 0,
+
+            grandTotal: req.body.grandTotal || 0
+
+        });
+
+        await bill.save();
+
+        res.json({
+
+            success: true,
+
+            billNo
+
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: err.message
+
+        });
+
+    }
+
+});
 /* ================= ORDERS ================= */
 
 app.post("/order", async(req,res)=>{
