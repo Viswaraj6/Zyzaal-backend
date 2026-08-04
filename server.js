@@ -12,7 +12,7 @@ const axios = require("axios");
 const multer = require("multer");
 const path = require("path");
 const XLSX = require("xlsx");
-
+const POSBill = require("./models/POSBill");
 const http = require("http");
 const { Server } = require("socket.io");
 
