@@ -1284,10 +1284,7 @@ for (const item of req.body.items || []) {
 
         if (sizeObj) {
 
-            sizeObj.stock = Math.max(
-                0,
-                (sizeObj.stock || 0) - qty
-            );
+            sizeObj.stock = (sizeObj.stock || 0) - qty;
 
             product.markModified("sizeStock");
         }
