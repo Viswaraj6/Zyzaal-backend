@@ -1262,7 +1262,42 @@ app.post("/pos/save-bill", async (req, res) => {
         });
 
         await bill.save();
+        // 🔥 REDUCE STOCK AFTER POS BILL SAVE
 
+for (const item of req.body.items || []) {
+
+    const product = await Product.findById(item._id);
+
+    if (!product) continue;
+
+    const qty = Number(item.qty || 1);
+
+    // Total Stock Reduce
+    product.stock = Math.max(
+        0,
+        (product.stock || 0) - qty
+    );
+
+    // Size Stock Reduce
+    if (product.sizeStock && item.size) {
+
+        const sizeObj = product.sizeStock.find(
+            s => s.size === item.size
+        );
+
+        if (sizeObj) {
+
+            sizeObj.stock = Math.max(
+                0,
+                (sizeObj.stock || 0) - qty
+            );
+
+            product.markModified("sizeStock");
+        }
+    }
+
+    await product.save();
+}
         res.json({
 
             success: true,
