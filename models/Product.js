@@ -31,7 +31,7 @@ const ProductSchema = new mongoose.Schema({
 
   category: String,
   hsnCode: String,
-gstRate: Number,
+
   lastSync: Date
 });
 
