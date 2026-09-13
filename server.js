@@ -1266,8 +1266,10 @@ app.post("/pos/save-bill", async (req, res) => {
 
 for (const item of req.body.items || []) {
 
-    const product = await Product.findById(item._id);
+    const productId = item._id || item.product?._id;
 
+const product = await Product.findById(productId);
+  
     if (!product) continue;
 
     const qty = Number(item.qty || 1);
