@@ -89,7 +89,21 @@ const Product = require("./models/Product");
 global.Product = Product;
 const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
+function getGstRate(hsnCode, price) {
 
+    const hsn = String(hsnCode || "").trim();
+
+    // Readymade garments
+    if (
+        hsn.startsWith("61") ||
+        hsn.startsWith("62") ||
+        hsn.startsWith("63")
+    ) {
+        return Number(price) <= 1000 ? 5 : 12;
+    }
+
+    return 0;
+}
 
 const User = mongoose.model("User", {
   name: String,
