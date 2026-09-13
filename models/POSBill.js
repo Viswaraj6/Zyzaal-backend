@@ -13,7 +13,7 @@ const POSBillSchema = new mongoose.Schema({
     total: Number,
 
     discount: Number,
-
+    roundOff: Number,
     tax: Number,
 
     grandTotal: Number,
