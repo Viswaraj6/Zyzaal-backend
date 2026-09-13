@@ -1266,9 +1266,9 @@ app.post("/pos/save-bill", async (req, res) => {
 
 for (const item of req.body.items || []) {
 
-    const productId = item._id || item.product?._id;
-
-const product = await Product.findById(productId);
+   const product = await Product.findOne({
+    "sizeStock.sku": item.barcode
+});
   
     if (!product) continue;
 
