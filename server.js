@@ -1273,10 +1273,7 @@ for (const item of req.body.items || []) {
     const qty = Number(item.qty || 1);
 
     // Total Stock Reduce
-    product.stock = Math.max(
-        0,
-        (product.stock || 0) - qty
-    );
+   product.stock = (product.stock || 0) - qty;
 
     // Size Stock Reduce
     if (product.sizeStock && item.size) {
