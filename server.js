@@ -1254,7 +1254,7 @@ app.post("/pos/save-bill", async (req, res) => {
             total: req.body.total || 0,
 
             discount: req.body.discount || 0,
-
+            roundOff: req.body.roundOff || 0,
             tax: req.body.tax || 0,
 
             grandTotal: req.body.grandTotal || 0
