@@ -90,6 +90,19 @@ global.Product = Product;
 const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
 
+function getGstRate(hsnCode, price) {
+
+    if (hsnCode && String(hsnCode).startsWith("62")) {
+
+        if (price <= 1000) {
+            return 5;
+        }
+
+        return 12;
+    }
+
+    return 0;
+}
 
 const User = mongoose.model("User", {
   name: String,
