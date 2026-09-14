@@ -122,6 +122,28 @@ app.post("/calculate-gst", async (req, res) => {
             const amount = qty * price;
 
             subtotal += amount;
+        }
+
+        // Discount cannot exceed subtotal
+        const actualDiscount =
+            Math.min(Math.max(discount, 0), subtotal);
+
+        for (const item of items) {
+
+            const qty = Number(item.qty || 1);
+            const price = Number(item.price || 0);
+
+            const amount = qty * price;
+
+            // Proportionate discount
+            const itemDiscount =
+                subtotal > 0
+                    ? actualDiscount * (amount / subtotal)
+                    : 0;
+
+            // GST-inclusive price after discount
+            const taxableInclusiveAmount =
+                Math.max(0, amount - itemDiscount);
 
             const gstRate = getGstRate(
                 item.hsnCode,
@@ -129,22 +151,31 @@ app.post("/calculate-gst", async (req, res) => {
             );
 
             const gstAmount =
-                (amount * gstRate) / (100 + gstRate);
+                (taxableInclusiveAmount * gstRate) /
+                (100 + gstRate);
 
             totalGst += gstAmount;
         }
 
         const taxableAmount =
-            Math.max(0, subtotal - discount);
+            Math.max(0, subtotal - actualDiscount);
 
         res.json({
+
             success: true,
+
             subtotal,
-            discount,
+
+            discount: actualDiscount,
+
             taxableAmount,
+
             gst: totalGst,
+
             cgst: totalGst / 2,
+
             sgst: totalGst / 2
+
         });
 
     } catch (err) {
@@ -152,13 +183,17 @@ app.post("/calculate-gst", async (req, res) => {
         console.log(err);
 
         res.status(500).json({
+
             success: false,
+
             message: err.message
+
         });
 
     }
 
 });
+
 const User = mongoose.model("User", {
   name: String,
   email: String,
