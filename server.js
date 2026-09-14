@@ -104,7 +104,61 @@ function getGstRate(hsnCode, price) {
 
     return 0;
 }
+app.post("/calculate-gst", async (req, res) => {
 
+    try {
+
+        const items = req.body.items || [];
+        const discount = Number(req.body.discount || 0);
+
+        let subtotal = 0;
+        let totalGst = 0;
+
+        for (const item of items) {
+
+            const qty = Number(item.qty || 1);
+            const price = Number(item.price || 0);
+
+            const amount = qty * price;
+
+            subtotal += amount;
+
+            const gstRate = getGstRate(
+                item.hsnCode,
+                price
+            );
+
+            const gstAmount =
+                (amount * gstRate) / (100 + gstRate);
+
+            totalGst += gstAmount;
+        }
+
+        const taxableAmount =
+            Math.max(0, subtotal - discount);
+
+        res.json({
+            success: true,
+            subtotal,
+            discount,
+            taxableAmount,
+            gst: totalGst,
+            cgst: totalGst / 2,
+            sgst: totalGst / 2
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
 const User = mongoose.model("User", {
   name: String,
   email: String,
