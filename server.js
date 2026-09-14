@@ -1421,6 +1421,34 @@ for (const item of req.body.items || []) {
     }
 
 });
+
+              /* ================= INVOICE HISTORY ================= */
+
+app.get("/pos/bills", async (req, res) => {
+
+    try {
+
+        const bills = await POSBill.find()
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            bills
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
+
 /* ================= ORDERS ================= */
 
 app.post("/order", async(req,res)=>{
