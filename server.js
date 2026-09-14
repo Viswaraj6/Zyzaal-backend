@@ -963,6 +963,9 @@ app.put("/products/:id", checkAdmin, async(req,res)=>{
     product.category =
       req.body.category || product.category;
 
+    product.hsnCode =
+  req.body.hsnCode || product.hsnCode;
+
     product.color =
       req.body.color || product.color;
 
