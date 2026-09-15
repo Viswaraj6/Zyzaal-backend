@@ -1489,6 +1489,76 @@ app.delete("/pos/bills/:id", async (req, res) => {
 
 });
 
+/* ================= EDIT INVOICE ================= */
+
+app.put("/pos/bills/:id", async (req, res) => {
+
+    try {
+
+        const bill =
+            await POSBill.findById(req.params.id);
+
+        if(!bill){
+
+            return res.status(404).json({
+                success:false,
+                message:"Invoice not found"
+            });
+
+        }
+
+        bill.customer =
+            req.body.customer ?? bill.customer;
+
+        bill.items =
+            req.body.items ?? bill.items;
+
+        bill.payments =
+            req.body.payments ?? bill.payments;
+
+        bill.total =
+            req.body.total ?? bill.total;
+
+        bill.discount =
+            req.body.discount ?? bill.discount;
+
+        bill.roundOff =
+            req.body.roundOff ?? bill.roundOff;
+
+        bill.tax =
+            req.body.tax ?? bill.tax;
+
+        bill.cgst =
+            req.body.cgst ?? bill.cgst;
+
+        bill.sgst =
+            req.body.sgst ?? bill.sgst;
+
+        bill.grandTotal =
+            req.body.grandTotal ?? bill.grandTotal;
+
+        await bill.save();
+
+        res.json({
+            success:true,
+            message:"Invoice updated successfully",
+            bill
+        });
+
+    }
+    catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+            success:false,
+            message:err.message
+        });
+
+    }
+
+});
+
 /* ================= ORDERS ================= */
 
 app.post("/order", async(req,res)=>{
