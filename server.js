@@ -1449,6 +1449,46 @@ app.get("/pos/bills", async (req, res) => {
 
 });
 
+/* ================= DELETE INVOICE ================= */
+
+app.delete("/pos/bills/:id", async (req, res) => {
+
+    try {
+
+        const bill =
+            await POSBill.findById(req.params.id);
+
+        if (!bill) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Invoice not found"
+            });
+
+        }
+
+        await POSBill.findByIdAndDelete(
+            req.params.id
+        );
+
+        res.json({
+            success: true,
+            message: "Invoice deleted successfully"
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
+
 /* ================= ORDERS ================= */
 
 app.post("/order", async(req,res)=>{
