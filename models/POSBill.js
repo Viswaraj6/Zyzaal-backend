@@ -16,6 +16,9 @@ const POSBillSchema = new mongoose.Schema({
     roundOff: Number,
     tax: Number,
 
+    cgst: Number,
+    sgst: Number,
+
     grandTotal: Number,
 
     createdAt: {
