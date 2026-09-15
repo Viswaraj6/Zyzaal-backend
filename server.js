@@ -1559,6 +1559,52 @@ app.put("/pos/bills/:id", async (req, res) => {
 
 });
 
+/* ================= UPDATE INVOICE ================= */
+
+app.put("/pos/bills/:id", async (req, res) => {
+
+    try {
+
+        const bill =
+            await POSBill.findById(req.params.id);
+
+        if(!bill){
+
+            return res.status(404).json({
+                success:false,
+                message:"Invoice not found"
+            });
+
+        }
+
+        /* Update Customer */
+
+        if(req.body.customer){
+
+            bill.customer = req.body.customer;
+
+        }
+
+        await bill.save();
+
+        res.json({
+            success:true,
+            message:"Invoice updated successfully",
+            bill
+        });
+
+    } catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+            success:false,
+            message:err.message
+        });
+
+    }
+
+});
 /* ================= ORDERS ================= */
 
 app.post("/order", async(req,res)=>{
