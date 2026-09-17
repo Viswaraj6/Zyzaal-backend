@@ -584,6 +584,542 @@ return res.json({
 
     }
 );
+
+/* =========================================================
+   ADMIN PRODUCT EXCEL IMPORT
+   ========================================================= */
+
+app.post(
+  "/admin/products/import",
+  checkAdmin,
+  upload.single("file"),
+  async (req, res) => {
+
+    try {
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "No Excel file uploaded"
+        });
+      }
+
+      const workbook = XLSX.read(req.file.buffer, {
+        type: "buffer"
+      });
+
+      const sheetName = workbook.SheetNames[0];
+
+      if (!sheetName) {
+        return res.status(400).json({
+          success: false,
+          message: "No worksheet found"
+        });
+      }
+
+      const sheet = workbook.Sheets[sheetName];
+
+      const rows = XLSX.utils.sheet_to_json(sheet, {
+        defval: "",
+        raw: true
+      });
+
+      if (!rows.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Excel file is empty"
+        });
+      }
+
+
+      /* =====================================================
+         REQUIRED COLUMNS
+         ===================================================== */
+
+      const requiredColumns = [
+        "Product Name",
+        "Gender",
+        "Category",
+        "Style No",
+        "Colour",
+        "Colour Code",
+        "Size",
+        "SKU",
+        "Barcode",
+        "HSN Code",
+        "Purchase Rate",
+        "MRP",
+        "Selling Price",
+        "Opening Stock",
+        "Warehouse",
+        "GST Type"
+      ];
+
+
+      const headers = Object.keys(rows[0]);
+
+      const missingColumns =
+        requiredColumns.filter(
+          column => !headers.includes(column)
+        );
+
+
+      if (missingColumns.length) {
+
+        return res.status(400).json({
+          success: false,
+          message: "Missing required columns",
+          missingColumns
+        });
+
+      }
+
+
+      /* =====================================================
+         HELPERS
+         ===================================================== */
+
+      const clean = value => {
+
+        if (
+          value === null ||
+          value === undefined
+        ) {
+          return "";
+        }
+
+        return String(value).trim();
+
+      };
+
+
+      const numberValue = value => {
+
+        const number = Number(value);
+
+        return Number.isFinite(number)
+          ? number
+          : 0;
+
+      };
+
+
+      /* =====================================================
+         DUPLICATE CHECK INSIDE EXCEL
+         ===================================================== */
+
+      const skuSet = new Set();
+      const barcodeSet = new Set();
+      const eanSet = new Set();
+
+      const errors = [];
+
+
+      rows.forEach((row, index) => {
+
+        const excelRow = index + 2;
+
+        const sku =
+          clean(row["SKU"]).toUpperCase();
+
+        const barcode =
+          clean(row["Barcode"]);
+
+        const ean =
+          clean(row["EAN"]);
+
+
+        if (!sku) {
+          errors.push(
+            `Excel Row ${excelRow}: SKU is required`
+          );
+        }
+
+
+        if (!barcode) {
+          errors.push(
+            `Excel Row ${excelRow}: Barcode is required`
+          );
+        }
+
+
+        if (
+          barcode &&
+          !/^\d{11}$/.test(barcode)
+        ) {
+          errors.push(
+            `Excel Row ${excelRow}: Barcode must contain exactly 11 digits`
+          );
+        }
+
+
+        /* EAN is OPTIONAL */
+
+        if (ean && ean.length > 30) {
+          errors.push(
+            `Excel Row ${excelRow}: EAN is too long`
+          );
+        }
+
+
+        if (skuSet.has(sku)) {
+
+          errors.push(
+            `Excel Row ${excelRow}: Duplicate SKU in Excel - ${sku}`
+          );
+
+        } else if (sku) {
+
+          skuSet.add(sku);
+
+        }
+
+
+        if (barcodeSet.has(barcode)) {
+
+          errors.push(
+            `Excel Row ${excelRow}: Duplicate Barcode in Excel - ${barcode}`
+          );
+
+        } else if (barcode) {
+
+          barcodeSet.add(barcode);
+
+        }
+
+
+        /* EAN duplicate only when EAN exists */
+
+        if (ean) {
+
+          if (eanSet.has(ean)) {
+
+            errors.push(
+              `Excel Row ${excelRow}: Duplicate EAN in Excel - ${ean}`
+            );
+
+          } else {
+
+            eanSet.add(ean);
+
+          }
+
+        }
+
+      });
+
+
+      if (errors.length) {
+
+        return res.status(400).json({
+          success: false,
+          message: "Excel validation failed",
+          errors
+        });
+
+      }
+
+
+      /* =====================================================
+         DATABASE DUPLICATE CHECK
+         ===================================================== */
+
+      for (const row of rows) {
+
+        const sku =
+          clean(row["SKU"]).toUpperCase();
+
+        const barcode =
+          clean(row["Barcode"]);
+
+        const ean =
+          clean(row["EAN"]);
+
+
+        const skuExists =
+          await Product.findOne({
+            "variants.sku": sku
+          }).lean();
+
+
+        if (skuExists) {
+
+          return res.status(400).json({
+            success: false,
+            message:
+              `SKU already exists: ${sku}`
+          });
+
+        }
+
+
+        const barcodeExists =
+          await Product.findOne({
+            "variants.barcode": barcode
+          }).lean();
+
+
+        if (barcodeExists) {
+
+          return res.status(400).json({
+            success: false,
+            message:
+              `Barcode already exists: ${barcode}`
+          });
+
+        }
+
+
+        /* EAN only check when supplied */
+
+        if (ean) {
+
+          const eanExists =
+            await Product.findOne({
+              "variants.ean": ean
+            }).lean();
+
+
+          if (eanExists) {
+
+            return res.status(400).json({
+              success: false,
+              message:
+                `EAN already exists: ${ean}`
+            });
+
+          }
+
+        }
+
+      }
+
+
+      /* =====================================================
+         GROUP PRODUCTS BY STYLE NO
+         ===================================================== */
+
+      const productMap = new Map();
+
+
+      rows.forEach(row => {
+
+        const styleNo =
+          clean(row["Style No"]);
+
+
+        if (!productMap.has(styleNo)) {
+
+          productMap.set(styleNo, {
+
+            name:
+              clean(row["Product Name"]),
+
+            gender:
+              clean(row["Gender"]),
+
+            styleNo,
+
+            category:
+              clean(row["Category"]),
+
+            hsnCode:
+              clean(row["HSN Code"]),
+
+            variants: []
+
+          });
+
+        }
+
+
+        const product =
+          productMap.get(styleNo);
+
+
+        const openingStock =
+          numberValue(
+            row["Opening Stock"]
+          );
+
+
+        product.variants.push({
+
+          colour:
+            clean(row["Colour"]),
+
+          colourCode:
+            clean(row["Colour Code"]),
+
+          size:
+            clean(row["Size"]),
+
+          sku:
+            clean(row["SKU"]).toUpperCase(),
+
+          barcode:
+            clean(row["Barcode"]),
+
+          /* EAN optional */
+
+          ean:
+            clean(row["EAN"]) || undefined,
+
+          purchaseRate:
+            numberValue(
+              row["Purchase Rate"]
+            ),
+
+          mrp:
+            numberValue(
+              row["MRP"]
+            ),
+
+          sellingPrice:
+            numberValue(
+              row["Selling Price"]
+            ),
+
+          openingStock,
+
+          warehouse:
+            clean(row["Warehouse"]),
+
+          gstType:
+            clean(row["GST Type"])
+
+        });
+
+      });
+
+
+      /* =====================================================
+         SAVE PRODUCTS
+         ===================================================== */
+
+      const importedProducts = [];
+
+
+      for (const productData of productMap.values()) {
+
+        const totalStock =
+          productData.variants.reduce(
+            (total, variant) =>
+              total +
+              Number(
+                variant.openingStock || 0
+              ),
+            0
+          );
+
+
+        const firstVariant =
+          productData.variants[0];
+
+
+        const product =
+          new Product({
+
+            name:
+              productData.name,
+
+            gender:
+              productData.gender,
+
+            styleNo:
+              productData.styleNo,
+
+            category:
+              productData.category,
+
+            hsnCode:
+              productData.hsnCode,
+
+            /* Existing fields */
+
+            price:
+              firstVariant.sellingPrice,
+
+            stock:
+              totalStock,
+
+            variants:
+              productData.variants,
+
+            sizes:
+              [
+                ...new Set(
+                  productData.variants.map(
+                    variant => variant.size
+                  )
+                )
+              ],
+
+            lastSync:
+              new Date()
+
+          });
+
+
+        await product.save();
+
+        importedProducts.push(product);
+
+      }
+
+
+      /* =====================================================
+         SUCCESS
+         ===================================================== */
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "Products imported successfully",
+
+        productsImported:
+          importedProducts.length,
+
+        variantsImported:
+          rows.length,
+
+        totalStock:
+          importedProducts.reduce(
+            (total, product) =>
+              total +
+              Number(product.stock || 0),
+            0
+          )
+
+      });
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Product Excel Import Error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Product import failed",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
 app.post("/check-user", async (req, res) => {
 
   const { phone } = req.body;
