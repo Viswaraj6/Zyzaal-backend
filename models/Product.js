@@ -68,6 +68,10 @@ const VariantSchema = new mongoose.Schema(
 const ProductSchema = new mongoose.Schema({
   // Existing fields
   name: String,
+  gender: {
+  type: String,
+  trim: true
+},
   styleNo: String,
   price: Number,
   stock: Number,
