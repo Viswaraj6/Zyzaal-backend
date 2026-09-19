@@ -823,22 +823,7 @@ app.post(
           clean(row["EAN"]);
 
 
-        const skuExists =
-          await Product.findOne({
-            "variants.sku": sku
-          }).lean();
-
-
-        if (skuExists) {
-
-          return res.status(400).json({
-            success: false,
-            message:
-              `SKU already exists: ${sku}`
-          });
-
-        }
-
+      
 
         const barcodeExists =
           await Product.findOne({
