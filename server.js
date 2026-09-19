@@ -744,14 +744,13 @@ app.post(
 
 
         if (
-          barcode &&
-          !/^\d{11}$/.test(barcode)
-        ) {
-          errors.push(
-            `Excel Row ${excelRow}: Barcode must contain exactly 11 digits`
-          );
-        }
-
+  barcode &&
+  !/^\d{12}$/.test(barcode)
+) {
+  errors.push(
+    `Excel Row ${excelRow}: Barcode must contain exactly 12 digits`
+  );
+}
 
         /* EAN is OPTIONAL */
 
