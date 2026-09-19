@@ -708,7 +708,7 @@ app.post(
          DUPLICATE CHECK INSIDE EXCEL
          ===================================================== */
 
-      const skuSet = new Set();
+     
       const barcodeSet = new Set();
       const eanSet = new Set();
 
