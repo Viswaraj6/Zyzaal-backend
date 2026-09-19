@@ -761,19 +761,7 @@ app.post(
         }
 
 
-        if (skuSet.has(sku)) {
-
-          errors.push(
-            `Excel Row ${excelRow}: Duplicate SKU in Excel - ${sku}`
-          );
-
-        } else if (sku) {
-
-          skuSet.add(sku);
-
-        }
-
-
+        
         if (barcodeSet.has(barcode)) {
 
           errors.push(
