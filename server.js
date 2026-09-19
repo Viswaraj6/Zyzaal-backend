@@ -642,7 +642,7 @@ app.post(
         "Category",
         "Style No",
         "Colour",
-        "Colour Code",
+       
         "Size",
         "SKU",
         "Barcode",
