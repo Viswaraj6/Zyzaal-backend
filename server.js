@@ -947,8 +947,7 @@ app.post(
           colour:
             clean(row["Colour"]),
 
-          colourCode:
-            clean(row["Colour Code"]),
+         
 
           size:
             clean(row["Size"]),
