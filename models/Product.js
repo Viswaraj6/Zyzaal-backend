@@ -62,51 +62,106 @@ const VariantSchema = new mongoose.Schema(
       trim: true
     }
   },
-  { _id: false }
+  {
+    _id: false
+  }
 );
 
-const ProductSchema = new mongoose.Schema({
-  // Existing fields
-  name: String,
-  gender: {
-  type: String,
-  trim: true
-},
-  styleNo: String,
-  price: Number,
-  stock: Number,
+const ProductSchema = new mongoose.Schema(
+  {
+    // Brand / Tenant Separation
+    brandId: {
+      type: String,
+      required: true,
+      enum: ["FARK618", "ZYZAAL"],
+      index: true,
+      trim: true
+    },
 
-  images: [String],
-  primaryImage: String,
+    // Existing fields
+    name: {
+      type: String,
+      trim: true
+    },
 
-  brand: String,
-  fabric: String,
-  typeDetail: String,
-  fit: String,
-  pattern: String,
-  color: String,
-  occasion: String,
-  description: String,
+    gender: {
+      type: String,
+      trim: true
+    },
 
-  sizes: [String],
+    styleNo: {
+      type: String,
+      trim: true
+    },
 
-  // Existing POS/E-Commerce structure
-  sizeStock: [
-    {
-      size: String,
-      stock: Number,
-      sku: String,
-      image: String
+    price: {
+      type: Number,
+      min: 0
+    },
+
+    stock: {
+      type: Number,
+      default: 0
+    },
+
+    images: [String],
+
+    primaryImage: String,
+
+    brand: String,
+
+    fabric: String,
+
+    typeDetail: String,
+
+    fit: String,
+
+    pattern: String,
+
+    color: String,
+
+    occasion: String,
+
+    description: String,
+
+    sizes: [String],
+
+    // Existing POS / E-Commerce structure
+    sizeStock: [
+      {
+        size: String,
+        stock: Number,
+        sku: String,
+        image: String
+      }
+    ],
+
+    category: {
+      type: String,
+      trim: true
+    },
+
+    hsnCode: {
+      type: String,
+      trim: true
+    },
+
+    // Exact product variants
+    variants: [VariantSchema],
+
+    lastSync: {
+      type: Date
     }
-  ],
+  },
+  {
+    timestamps: true
+  }
+);
 
-  category: String,
-  hsnCode: String,
-
-  // NEW: Exact product variants
-  variants: [VariantSchema],
-
-  lastSync: Date
+// Faster product filtering by brand and style
+ProductSchema.index({
+  brandId: 1,
+  styleNo: 1
 });
 
 module.exports = mongoose.model("Product", ProductSchema);
