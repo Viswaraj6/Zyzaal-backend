@@ -1403,19 +1403,39 @@ app.get("/user/:phone/address", async (req, res) => {
 });
 app.get("/products", async (req, res) => {
   try {
+    const brandId = req.query.brandId;
 
-    const products = await Product.find().sort({ _id: -1 });
+    if (!brandId) {
+      return res.status(400).json({
+        success: false,
+        message: "Brand ID is required"
+      });
+    }
+
+    if (!["FARK618", "ZYZAAL"].includes(brandId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid brand ID"
+      });
+    }
+
+    const products = await Product.find({
+      brandId
+    }).sort({
+      _id: -1
+    });
 
     res.json(products);
 
   } catch (err) {
     console.log(err);
+
     res.status(500).json({
+      success: false,
       error: "Failed to fetch products ❌"
     });
   }
 });
-
 app.get("/products/:id", async (req, res) => {
 
     try {
