@@ -1915,6 +1915,14 @@ app.post("/pos/save-bill", async (req, res) => {
         await bill.save();
        // REDUCE STOCK AFTER POS BILL SAVE
 for (const item of req.body.items || []) {
+  console.log("BILL ITEM:", {
+  productId: item.productId,
+  sku: item.sku,
+  barcode: item.barcode,
+  size: item.size,
+  colour: item.colour,
+  qty: item.qty
+});
   const product = await Product.findById(item.productId);
 
   if (!product) continue;
