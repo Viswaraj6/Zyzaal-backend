@@ -51,7 +51,12 @@ const VariantSchema = new mongoose.Schema(
       type: Number,
       min: 0
     },
-
+// Live stock for POS
+stock: {
+  type: Number,
+  min: 0,
+  default: 0
+},
     warehouse: {
       type: String,
       trim: true
