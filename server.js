@@ -970,7 +970,7 @@ app.post(
             ),
 
           openingStock,
-
+          stock: openingStock,
           warehouse:
             clean(row["Warehouse"]),
 
