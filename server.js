@@ -456,7 +456,7 @@ for (const row of rows) {
 
     if (!styleNo) continue;
 
-    const product = await Product.findOne({ styleNo });
+    const product = await Product.findOne({ styleNo ,brandId});
 
     if (!product) {
         notFound++;
