@@ -1967,6 +1967,14 @@ console.log("PRODUCT FOUND:", {
     }
 
     if (variant) {
+
+      console.log("MATCHED VARIANT:", {
+  sku: variant.sku,
+  barcode: variant.barcode,
+  size: variant.size,
+  oldStock: variant.stock,
+  qty: qty
+});
       const currentStock = Number(variant.stock || 0);
 
       variant.stock = Math.max(0, currentStock - qty);
