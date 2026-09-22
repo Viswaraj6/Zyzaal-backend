@@ -1913,35 +1913,94 @@ app.post("/pos/save-bill", async (req, res) => {
         });
 
         await bill.save();
-        // 🔥 REDUCE STOCK AFTER POS BILL SAVE
-
+       // REDUCE STOCK AFTER POS BILL SAVE
 for (const item of req.body.items || []) {
-
   const product = await Product.findById(item.productId);
-  
-    if (!product) continue;
 
-    const qty = Number(item.qty || 1);
+  if (!product) continue;
 
-    // Total Stock Reduce
-   product.stock = (product.stock || 0) - qty;
+  const qty = Number(item.qty || 1);
 
-    // Size Stock Reduce
-    if (product.sizeStock && item.size) {
+  // ==========================================
+  // ZYZAAL - REDUCE VARIANT STOCK
+  // ==========================================
+  if (String(product.brandId).toUpperCase() === "ZYZAAL") {
+    let variant = null;
 
-        const sizeObj = product.sizeStock.find(
-            s => s.size === item.size
-        );
+    // 1. Find by SKU
+    if (item.sku) {
+      variant = product.variants.find(
+        v => String(v.sku) === String(item.sku)
+      );
+    }
 
-        if (sizeObj) {
+    // 2. If SKU not found, find by barcode
+    if (!variant && item.barcode) {
+      variant = product.variants.find(
+        v => String(v.barcode) === String(item.barcode)
+      );
+    }
 
-            sizeObj.stock = (sizeObj.stock || 0) - qty;
+    // 3. If barcode not found, find by size + colour
+    if (!variant && item.size) {
+      variant = product.variants.find(v =>
+        String(v.size).trim().toLowerCase() ===
+          String(item.size).trim().toLowerCase() &&
+        (
+          !item.colour ||
+          String(v.colour).trim().toLowerCase() ===
+            String(item.colour).trim().toLowerCase()
+        )
+      );
+    }
 
-            product.markModified("sizeStock");
-        }
+    if (variant) {
+      const currentStock = Number(variant.stock || 0);
+
+      variant.stock = Math.max(0, currentStock - qty);
+
+      product.markModified("variants");
+
+      console.log(
+        `ZYZAAL stock reduced | SKU: ${variant.sku} | ` +
+        `Old Stock: ${currentStock} | ` +
+        `Sold: ${qty} | ` +
+        `New Stock: ${variant.stock}`
+      );
+    } else {
+      console.log(
+        `ZYZAAL variant not found | SKU: ${item.sku} | ` +
+        `Barcode: ${item.barcode} | Size: ${item.size}`
+      );
     }
 
     await product.save();
+
+    // Skip FARK618 stock logic
+    continue;
+  }
+
+  // ==========================================
+  // FARK618 - EXISTING STOCK LOGIC
+  // ==========================================
+
+  // Total Stock Reduce
+  product.stock = (product.stock || 0) - qty;
+
+  // Size Stock Reduce
+  if (product.sizeStock && item.size) {
+    const sizeObj = product.sizeStock.find(
+      s => String(s.size).trim().toLowerCase() ===
+        String(item.size).trim().toLowerCase()
+    );
+
+    if (sizeObj) {
+      sizeObj.stock = (sizeObj.stock || 0) - qty;
+      product.markModified("sizeStock");
+    }
+  }
+
+  await product.save();
 }
         res.json({
 
