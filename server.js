@@ -1924,7 +1924,11 @@ for (const item of req.body.items || []) {
   qty: item.qty
 });
   const product = await Product.findById(item.productId);
-
+console.log("PRODUCT FOUND:", {
+  id: product?._id,
+  brandId: product?.brandId,
+  variants: product?.variants
+});
   if (!product) continue;
 
   const qty = Number(item.qty || 1);
