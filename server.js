@@ -1967,11 +1967,32 @@ console.log("PRODUCT FOUND:", {
     }
 
    if (variant) {
-  const currentStock = Number(variant.stock || 0);
+ const openingStock = Number(variant.openingStock || 0);
+const savedStock = variant.stock;
 
-  // Reduce selected variant stock
-  variant.stock = Math.max(0, currentStock - qty);
+let currentStock;
 
+// Old products: stock 0 but openingStock has actual quantity
+if (
+  (savedStock === undefined || savedStock === null) &&
+  openingStock > 0
+) {
+  currentStock = openingStock;
+} else {
+  currentStock = Number(savedStock || 0);
+}
+
+variant.stock = Math.max(0, currentStock - qty);
+
+product.markModified("variants");
+
+console.log("ZYZAAL STOCK UPDATE:", {
+  sku: variant.sku,
+  openingStock,
+  oldStock: currentStock,
+  soldQty: qty,
+  newStock: variant.stock
+});
   // Recalculate total product stock from all variants
   product.stock = product.variants.reduce(
     (total, v) => total + Number(v.stock || 0),
