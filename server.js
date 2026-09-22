@@ -1966,33 +1966,28 @@ console.log("PRODUCT FOUND:", {
       );
     }
 
-    if (variant) {
+   if (variant) {
+  const currentStock = Number(variant.stock || 0);
 
-      console.log("MATCHED VARIANT:", {
-  sku: variant.sku,
-  barcode: variant.barcode,
-  size: variant.size,
-  oldStock: variant.stock,
-  qty: qty
-});
-      const currentStock = Number(variant.stock || 0);
+  // Reduce selected variant stock
+  variant.stock = Math.max(0, currentStock - qty);
 
-      variant.stock = Math.max(0, currentStock - qty);
+  // Recalculate total product stock from all variants
+  product.stock = product.variants.reduce(
+    (total, v) => total + Number(v.stock || 0),
+    0
+  );
 
-      product.markModified("variants");
+  product.markModified("variants");
 
-      console.log(
-        `ZYZAAL stock reduced | SKU: ${variant.sku} | ` +
-        `Old Stock: ${currentStock} | ` +
-        `Sold: ${qty} | ` +
-        `New Stock: ${variant.stock}`
-      );
-    } else {
-      console.log(
-        `ZYZAAL variant not found | SKU: ${item.sku} | ` +
-        `Barcode: ${item.barcode} | Size: ${item.size}`
-      );
-    }
+  console.log(
+    `ZYZAAL stock reduced | SKU: ${variant.sku} | ` +
+    `Old Stock: ${currentStock} | ` +
+    `Sold: ${qty} | ` +
+    `New Variant Stock: ${variant.stock} | ` +
+    `Total Product Stock: ${product.stock}`
+  );
+}
 
     await product.save();
 
