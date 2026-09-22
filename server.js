@@ -990,7 +990,7 @@ app.post(
 
         const product =
           new Product({
-
+           brandId: brandId,
             name:
               productData.name,
 
