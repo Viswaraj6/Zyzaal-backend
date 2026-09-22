@@ -413,7 +413,16 @@ app.post(
     async (req, res) => {
 
         try {
+        const brandId = String(
+    req.body.brandId || ""
+).trim().toUpperCase();
 
+if (!["FARK618", "ZYZAAL"].includes(brandId)) {
+    return res.status(400).json({
+        success: false,
+        message: "Valid brandId is required"
+    });
+}
             if (!req.file) {
                 return res.status(400).json({
                     success: false,
