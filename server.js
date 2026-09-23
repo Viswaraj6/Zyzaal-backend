@@ -2100,46 +2100,104 @@ app.get("/pos/bills", async (req, res) => {
 
 });
 
-/* ================= DELETE INVOICE ================= */
+/* ================= DELETE INVOICE + RESTORE STOCK ================= */
 
 app.delete("/pos/bills/:id", async (req, res) => {
 
     try {
 
-        const bill =
-            await POSBill.findById(req.params.id);
+        const bill = await POSBill.findById(req.params.id);
 
         if (!bill) {
-
             return res.status(404).json({
                 success: false,
                 message: "Invoice not found"
             });
+        }
+
+        /* ================= RESTORE STOCK ================= */
+
+        for (const item of bill.items || []) {
+
+            const product = await Product.findById(
+                item.productId
+            );
+
+            if (!product) {
+                continue;
+            }
+
+            const qty = Number(item.qty || 1);
+
+            /* ================= TOTAL STOCK RESTORE ================= */
+
+            product.stock =
+                Number(product.stock || 0) + qty;
+
+
+            /* ================= SIZE STOCK RESTORE ================= */
+
+            if (product.sizeStock && item.size) {
+
+                const sizeObj =
+                    product.sizeStock.find(
+                        s =>
+                            String(s.size)
+                                .trim()
+                                .toLowerCase() ===
+                            String(item.size)
+                                .trim()
+                                .toLowerCase()
+                    );
+
+                if (sizeObj) {
+
+                    sizeObj.stock =
+                        Number(sizeObj.stock || 0) + qty;
+
+                    product.markModified("sizeStock");
+
+                }
+
+            }
+
+            await product.save();
 
         }
+
+
+        /* ================= DELETE INVOICE ================= */
 
         await POSBill.findByIdAndDelete(
             req.params.id
         );
 
+
         res.json({
+
             success: true,
-            message: "Invoice deleted successfully"
+
+            message:
+                "Invoice deleted and stock restored successfully"
+
         });
+
 
     } catch (err) {
 
         console.log(err);
 
         res.status(500).json({
+
             success: false,
+
             message: err.message
+
         });
 
     }
 
 });
-
 /* ================= EDIT INVOICE ================= */
 
 app.put("/pos/bills/:id", async (req, res) => {
