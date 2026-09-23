@@ -1895,7 +1895,7 @@ app.post("/pos/save-bill", async (req, res) => {
         const bill = new POSBill({
 
             billNo,
-
+            brandId: req.body.brandId,
             customer: req.body.customer || {},
 
             items: req.body.items || [],
