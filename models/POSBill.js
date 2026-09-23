@@ -3,7 +3,12 @@ const mongoose = require("mongoose");
 const POSBillSchema = new mongoose.Schema({
 
     billNo: String,
-
+    
+    brandId: {
+    type: String,
+    required: true,
+    enum: ["FARK618", "ZYZAAL"]
+},
     customer: Object,
 
     items: Array,
