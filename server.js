@@ -2100,6 +2100,7 @@ app.get("/pos/bills", async (req, res) => {
 
 });
 
+
 /* ================= DELETE INVOICE + RESTORE STOCK ================= */
 
 app.delete("/pos/bills/:id", async (req, res) => {
@@ -2119,36 +2120,94 @@ app.delete("/pos/bills/:id", async (req, res) => {
 
         for (const item of bill.items || []) {
 
-            const product = await Product.findById(
-                item.productId
-            );
+            const product = await Product.findById(item.productId);
 
-            if (!product) {
-                continue;
-            }
+            if (!product) continue;
 
             const qty = Number(item.qty || 1);
 
-            /* ================= TOTAL STOCK RESTORE ================= */
+            /* ==========================================
+               ZYZAAL - RESTORE VARIANT STOCK
+               ========================================== */
 
+            if (
+                String(product.brandId).toUpperCase() === "ZYZAAL"
+            ) {
+
+                let variant = null;
+
+                // 1. Find by SKU
+                if (item.sku) {
+                    variant = product.variants.find(
+                        v => String(v.sku) === String(item.sku)
+                    );
+                }
+
+                // 2. Find by Barcode
+                if (!variant && item.barcode) {
+                    variant = product.variants.find(
+                        v => String(v.barcode) === String(item.barcode)
+                    );
+                }
+
+                // 3. Find by Size + Colour
+                if (!variant && item.size) {
+                    variant = product.variants.find(v =>
+                        String(v.size || "").trim().toLowerCase() ===
+                        String(item.size || "").trim().toLowerCase() &&
+                        (
+                            !item.colour ||
+                            String(v.colour || "").trim().toLowerCase() ===
+                            String(item.colour || "").trim().toLowerCase()
+                        )
+                    );
+                }
+
+                if (variant) {
+
+                    const currentStock =
+                        Number(variant.stock || 0);
+
+                    variant.stock = currentStock + qty;
+
+                    product.stock = product.variants.reduce(
+                        (total, v) =>
+                            total + Number(v.stock || 0),
+                        0
+                    );
+
+                    product.markModified("variants");
+
+                    console.log("ZYZAAL STOCK RESTORED:", {
+                        sku: variant.sku,
+                        restoredQty: qty,
+                        newVariantStock: variant.stock,
+                        totalProductStock: product.stock
+                    });
+
+                }
+
+                await product.save();
+
+                continue;
+            }
+
+            /* ==========================================
+               FARK618 - RESTORE STOCK
+               ========================================== */
+
+            // Total Stock Restore
             product.stock =
                 Number(product.stock || 0) + qty;
 
-
-            /* ================= SIZE STOCK RESTORE ================= */
-
+            // Size Stock Restore
             if (product.sizeStock && item.size) {
 
-                const sizeObj =
-                    product.sizeStock.find(
-                        s =>
-                            String(s.size)
-                                .trim()
-                                .toLowerCase() ===
-                            String(item.size)
-                                .trim()
-                                .toLowerCase()
-                    );
+                const sizeObj = product.sizeStock.find(
+                    s =>
+                        String(s.size || "").trim().toLowerCase() ===
+                        String(item.size || "").trim().toLowerCase()
+                );
 
                 if (sizeObj) {
 
@@ -2165,39 +2224,28 @@ app.delete("/pos/bills/:id", async (req, res) => {
 
         }
 
-
         /* ================= DELETE INVOICE ================= */
 
-        await POSBill.findByIdAndDelete(
-            req.params.id
-        );
-
+        await POSBill.findByIdAndDelete(req.params.id);
 
         res.json({
-
             success: true,
-
-            message:
-                "Invoice deleted and stock restored successfully"
-
+            message: "Invoice deleted and stock restored successfully"
         });
-
 
     } catch (err) {
 
         console.log(err);
 
         res.status(500).json({
-
             success: false,
-
             message: err.message
-
         });
 
     }
 
 });
+
 /* ================= EDIT INVOICE ================= */
 
 app.put("/pos/bills/:id", async (req, res) => {
