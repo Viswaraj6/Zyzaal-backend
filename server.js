@@ -2068,7 +2068,18 @@ app.get("/pos/bills", async (req, res) => {
 
     try {
 
-        const bills = await POSBill.find()
+        const brandId = String(req.query.brandId || "")
+            .trim()
+            .toUpperCase();
+
+        if (!["FARK618", "ZYZAAL"].includes(brandId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Valid brandId is required"
+            });
+        }
+
+        const bills = await POSBill.find({ brandId })
             .sort({ createdAt: -1 });
 
         res.json({
