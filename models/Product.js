@@ -179,12 +179,15 @@ const ProductSchema = new mongoose.Schema(
       trim: true
     },
 
-    // Exact product variants
-    variants: [VariantSchema],
+   // Exact product variants
+variants: [VariantSchema],
 
-    lastSync: {
-      type: Date
-    }
+// Images grouped by colour
+colourImages: [ColourImageSchema],
+
+lastSync: {
+  type: Date
+}
   },
   {
     timestamps: true
