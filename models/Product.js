@@ -72,6 +72,34 @@ stock: {
   }
 );
 
+const ColourImageSchema = new mongoose.Schema(
+  {
+    colour: {
+      type: String,
+      trim: true,
+      required: true
+    },
+
+    colourCode: {
+      type: String,
+      trim: true
+    },
+
+    images: {
+      type: [String],
+      default: []
+    },
+
+    primaryImage: {
+      type: String,
+      default: ""
+    }
+  },
+  {
+    _id: false
+  }
+);
+
 const ProductSchema = new mongoose.Schema(
   {
     // Brand / Tenant Separation
