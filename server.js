@@ -89,6 +89,45 @@ const Product = require("./models/Product");
 global.Product = Product;
 const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
+
+app.post("/admin/upload-image", checkAdmin, upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No image uploaded"
+      });
+    }
+
+    const file = await toFile(
+      req.file.buffer,
+      req.file.originalname
+    );
+
+    const result = await imagekit.files.upload({
+      file,
+      fileName: req.file.originalname,
+      folder: "/zyzaal/products",
+      useUniqueFileName: true
+    });
+
+    res.json({
+      success: true,
+      url: result.url,
+      fileId: result.fileId,
+      name: result.name
+    });
+
+  } catch (err) {
+    console.error("ImageKit upload failed:", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
+
 function getGstRate(hsnCode, price) {
 
     const hsn = String(hsnCode || "").trim();
