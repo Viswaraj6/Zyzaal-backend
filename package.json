@@ -10,6 +10,7 @@
    "cloudinary": "^2.x.x",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "imagekit": "^4.2.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.0",
      "multer": "^2.0.2",
