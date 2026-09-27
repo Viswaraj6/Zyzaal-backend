@@ -1608,6 +1608,17 @@ app.put("/products/:id", checkAdmin, async(req,res)=>{
 
     product.primaryImage =
       req.body.primaryImage || product.primaryImage;
+    // COLOUR-WISE IMAGES
+if (Array.isArray(req.body.colourImages)) {
+  product.colourImages = req.body.colourImages;
+  product.markModified("colourImages");
+}
+
+// VARIANTS
+if (Array.isArray(req.body.variants)) {
+  product.variants = req.body.variants;
+  product.markModified("variants");
+}
 
     // 🔥 SIZE STOCK
     if(req.body.sizeStock){
