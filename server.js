@@ -2314,52 +2314,532 @@ app.put("/pos/bills/:id", async (req, res) => {
 
         }
 
+
+        const oldItems =
+            Array.isArray(bill.items)
+                ? bill.items
+                : [];
+
+        const newItems =
+            Array.isArray(req.body.items)
+                ? req.body.items
+                : oldItems;
+
+
+        /* ==========================================
+           STEP 1
+           RESTORE OLD INVOICE STOCK
+           ========================================== */
+
+        for(const item of oldItems){
+
+            const product =
+                await Product.findById(
+                    item.productId
+                );
+
+            if(!product){
+                continue;
+            }
+
+
+            const qty =
+                Number(item.qty || 1);
+
+
+            /* ================= ZYZAAL ================= */
+
+            if(
+                String(product.brandId)
+                    .toUpperCase()
+                ===
+                "ZYZAAL"
+            ){
+
+                let variant = null;
+
+
+                /* SKU */
+
+                if(item.sku){
+
+                    variant =
+                        (product.variants || [])
+                            .find(v =>
+                                String(v.sku)
+                                ===
+                                String(item.sku)
+                            );
+
+                }
+
+
+                /* Barcode */
+
+                if(
+                    !variant &&
+                    item.barcode
+                ){
+
+                    variant =
+                        (product.variants || [])
+                            .find(v =>
+                                String(v.barcode)
+                                ===
+                                String(item.barcode)
+                            );
+
+                }
+
+
+                /* Size + Colour */
+
+                if(
+                    !variant &&
+                    item.size
+                ){
+
+                    variant =
+                        (product.variants || [])
+                            .find(v =>
+
+                                String(
+                                    v.size || ""
+                                )
+                                .trim()
+                                .toLowerCase()
+
+                                ===
+
+                                String(
+                                    item.size || ""
+                                )
+                                .trim()
+                                .toLowerCase()
+
+                                &&
+
+                                (
+                                    !item.colour ||
+
+                                    String(
+                                        v.colour || ""
+                                    )
+                                    .trim()
+                                    .toLowerCase()
+
+                                    ===
+
+                                    String(
+                                        item.colour || ""
+                                    )
+                                    .trim()
+                                    .toLowerCase()
+                                )
+
+                            );
+
+                }
+
+
+                if(variant){
+
+                    variant.stock =
+                        Number(
+                            variant.stock || 0
+                        )
+                        + qty;
+
+
+                    product.stock =
+                        (product.variants || [])
+                            .reduce(
+                                (total, v) =>
+                                    total +
+                                    Number(
+                                        v.stock || 0
+                                    ),
+                                0
+                            );
+
+
+                    product.markModified(
+                        "variants"
+                    );
+
+                }
+
+
+                await product.save();
+
+                continue;
+
+            }
+
+
+            /* ================= FARK618 ================= */
+
+            product.stock =
+                Number(
+                    product.stock || 0
+                )
+                + qty;
+
+
+            if(
+                product.sizeStock &&
+                item.size
+            ){
+
+                const sizeObj =
+                    product.sizeStock.find(
+                        s =>
+                            String(
+                                s.size || ""
+                            )
+                            .trim()
+                            .toLowerCase()
+
+                            ===
+
+                            String(
+                                item.size || ""
+                            )
+                            .trim()
+                            .toLowerCase()
+                    );
+
+
+                if(sizeObj){
+
+                    sizeObj.stock =
+                        Number(
+                            sizeObj.stock || 0
+                        )
+                        + qty;
+
+
+                    product.markModified(
+                        "sizeStock"
+                    );
+
+                }
+
+            }
+
+
+            await product.save();
+
+        }
+
+
+        /* ==========================================
+           STEP 2
+           REDUCE NEW INVOICE STOCK
+           ========================================== */
+
+        for(const item of newItems){
+
+            /*
+             * Empty item skip
+             */
+
+            if(
+                !item ||
+                !item.productId
+            ){
+
+                continue;
+
+            }
+
+
+            const product =
+                await Product.findById(
+                    item.productId
+                );
+
+            if(!product){
+                continue;
+            }
+
+
+            const qty =
+                Number(item.qty || 1);
+
+
+            /* ================= ZYZAAL ================= */
+
+            if(
+                String(product.brandId)
+                    .toUpperCase()
+                ===
+                "ZYZAAL"
+            ){
+
+                let variant = null;
+
+
+                /* SKU */
+
+                if(item.sku){
+
+                    variant =
+                        (product.variants || [])
+                            .find(v =>
+                                String(v.sku)
+                                ===
+                                String(item.sku)
+                            );
+
+                }
+
+
+                /* Barcode */
+
+                if(
+                    !variant &&
+                    item.barcode
+                ){
+
+                    variant =
+                        (product.variants || [])
+                            .find(v =>
+                                String(v.barcode)
+                                ===
+                                String(item.barcode)
+                            );
+
+                }
+
+
+                /* Size + Colour */
+
+                if(
+                    !variant &&
+                    item.size
+                ){
+
+                    variant =
+                        (product.variants || [])
+                            .find(v =>
+
+                                String(
+                                    v.size || ""
+                                )
+                                .trim()
+                                .toLowerCase()
+
+                                ===
+
+                                String(
+                                    item.size || ""
+                                )
+                                .trim()
+                                .toLowerCase()
+
+                                &&
+
+                                (
+                                    !item.colour ||
+
+                                    String(
+                                        v.colour || ""
+                                    )
+                                    .trim()
+                                    .toLowerCase()
+
+                                    ===
+
+                                    String(
+                                        item.colour || ""
+                                    )
+                                    .trim()
+                                    .toLowerCase()
+                                )
+
+                            );
+
+                }
+
+
+                if(variant){
+
+                    const currentStock =
+                        Number(
+                            variant.stock || 0
+                        );
+
+
+                    variant.stock =
+                        Math.max(
+                            0,
+                            currentStock - qty
+                        );
+
+
+                    product.stock =
+                        (product.variants || [])
+                            .reduce(
+                                (total, v) =>
+                                    total +
+                                    Number(
+                                        v.stock || 0
+                                    ),
+                                0
+                            );
+
+
+                    product.markModified(
+                        "variants"
+                    );
+
+                }
+
+
+                await product.save();
+
+                continue;
+
+            }
+
+
+            /* ================= FARK618 ================= */
+
+            product.stock =
+                Math.max(
+                    0,
+                    Number(
+                        product.stock || 0
+                    ) - qty
+                );
+
+
+            if(
+                product.sizeStock &&
+                item.size
+            ){
+
+                const sizeObj =
+                    product.sizeStock.find(
+                        s =>
+                            String(
+                                s.size || ""
+                            )
+                            .trim()
+                            .toLowerCase()
+
+                            ===
+
+                            String(
+                                item.size || ""
+                            )
+                            .trim()
+                            .toLowerCase()
+                    );
+
+
+                if(sizeObj){
+
+                    sizeObj.stock =
+                        Math.max(
+                            0,
+                            Number(
+                                sizeObj.stock || 0
+                            ) - qty
+                        );
+
+
+                    product.markModified(
+                        "sizeStock"
+                    );
+
+                }
+
+            }
+
+
+            await product.save();
+
+        }
+
+
+        /* ==========================================
+           STEP 3
+           UPDATE BILL
+           ========================================== */
+
         bill.customer =
-            req.body.customer ?? bill.customer;
+            req.body.customer ??
+            bill.customer;
 
         bill.items =
-            req.body.items ?? bill.items;
+            newItems;
 
         bill.payments =
-            req.body.payments ?? bill.payments;
+            req.body.payments ??
+            bill.payments;
 
         bill.total =
-            req.body.total ?? bill.total;
+            req.body.total ??
+            bill.total;
 
         bill.discount =
-            req.body.discount ?? bill.discount;
+            req.body.discount ??
+            bill.discount;
 
         bill.roundOff =
-            req.body.roundOff ?? bill.roundOff;
+            req.body.roundOff ??
+            bill.roundOff;
 
         bill.tax =
-            req.body.tax ?? bill.tax;
+            req.body.tax ??
+            bill.tax;
 
         bill.cgst =
-            req.body.cgst ?? bill.cgst;
+            req.body.cgst ??
+            bill.cgst;
 
         bill.sgst =
-            req.body.sgst ?? bill.sgst;
+            req.body.sgst ??
+            bill.sgst;
 
         bill.grandTotal =
-            req.body.grandTotal ?? bill.grandTotal;
+            req.body.grandTotal ??
+            bill.grandTotal;
+
 
         await bill.save();
 
+
         res.json({
+
             success:true,
-            message:"Invoice updated successfully",
+
+            message:
+                "Invoice updated successfully",
+
             bill
+
         });
+
 
     }
     catch(err){
 
-        console.log(err);
+        console.log(
+            "EDIT INVOICE ERROR:",
+            err
+        );
+
 
         res.status(500).json({
+
             success:false,
-            message:err.message
+
+            message:
+                err.message
+
         });
 
     }
