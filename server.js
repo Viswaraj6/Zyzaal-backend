@@ -2366,7 +2366,7 @@ app.put("/pos/bills/:id", async (req, res) => {
 
 });
 
-/* ================= UPDATE INVOICE ================= */
+/* ================= UPDATE INVOICE ================= 
 
 app.put("/pos/bills/:id", async (req, res) => {
 
@@ -2384,7 +2384,7 @@ app.put("/pos/bills/:id", async (req, res) => {
 
         }
 
-        /* Update Customer */
+        /* Update Customer 
 
         if(req.body.customer){
 
@@ -2411,7 +2411,7 @@ app.put("/pos/bills/:id", async (req, res) => {
 
     }
 
-});
+});    */
 /* ================= ORDERS ================= */
 
 app.post("/order", async(req,res)=>{
