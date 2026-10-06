@@ -86,6 +86,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 }
 
 const Product = require("./models/Product");
+const CustomField = require("./models/CustomField");
 global.Product = Product;
 const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
