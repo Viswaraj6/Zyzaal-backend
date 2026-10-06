@@ -223,6 +223,143 @@ app.post(
   }
 );
 
+// UPDATE CUSTOM FIELD
+app.put(
+  "/admin/custom-fields/:id",
+  checkAdmin,
+  async (req, res) => {
+    try {
+
+      const { id } = req.params;
+
+      const {
+        brandId,
+        name,
+        type,
+        options,
+        description,
+        required,
+        showInImport,
+        active
+      } = req.body;
+
+
+      const cleanBrandId =
+        String(brandId || "")
+          .trim()
+          .toUpperCase();
+
+
+      const cleanName =
+        String(name || "").trim();
+
+
+      if (
+        !["FARK618", "ZYZAAL"]
+          .includes(cleanBrandId)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid brandId is required"
+        });
+      }
+
+
+      if (!cleanName) {
+        return res.status(400).json({
+          success: false,
+          message: "Field name is required"
+        });
+      }
+
+
+      // Check duplicate field name
+      const existing =
+        await CustomField.findOne({
+          brandId: cleanBrandId,
+          name: cleanName,
+          _id: { $ne: id }
+        });
+
+
+      if (existing) {
+        return res.status(409).json({
+          success: false,
+          message: "Field already exists"
+        });
+      }
+
+
+      const field =
+        await CustomField.findOneAndUpdate(
+          {
+            _id: id,
+            brandId: cleanBrandId
+          },
+          {
+            $set: {
+              name: cleanName,
+
+              type:
+                String(
+                  type || "text"
+                ).toLowerCase(),
+
+              options:
+                Array.isArray(options)
+                  ? options
+                  : [],
+
+              description:
+                description || "",
+
+              required:
+                Boolean(required),
+
+              showInImport:
+                Boolean(showInImport),
+
+              active:
+                active !== false
+            }
+          },
+          {
+            new: true,
+            runValidators: true
+          }
+        );
+
+
+      if (!field) {
+        return res.status(404).json({
+          success: false,
+          message: "Custom field not found"
+        });
+      }
+
+
+      res.json({
+        success: true,
+        message: "Custom field updated",
+        field
+      });
+
+
+    } catch (err) {
+
+      console.error(
+        "Update Custom Field Error:",
+        err
+      );
+
+      res.status(500).json({
+        success: false,
+        message: err.message
+      });
+    }
+  }
+);
+
 global.Product = Product;
 const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
