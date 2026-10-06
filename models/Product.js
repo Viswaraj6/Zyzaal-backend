@@ -157,6 +157,11 @@ const ProductSchema = new mongoose.Schema(
 
     description: String,
 
+    customFields: {
+  type: mongoose.Schema.Types.Mixed,
+  default: {}
+},
+
     sizes: [String],
 
     // Existing POS / E-Commerce structure
