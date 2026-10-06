@@ -360,6 +360,72 @@ app.put(
   }
 );
 
+// DELETE CUSTOM FIELD
+app.delete(
+  "/admin/custom-fields/:id",
+  checkAdmin,
+  async (req, res) => {
+    try {
+
+      const { id } = req.params;
+
+      const brandId =
+        String(
+          req.query.brandId ||
+          req.body.brandId ||
+          ""
+        )
+          .trim()
+          .toUpperCase();
+
+      if (
+        !["FARK618", "ZYZAAL"]
+          .includes(brandId)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid brandId is required"
+        });
+      }
+
+
+      const field =
+        await CustomField.findOneAndDelete({
+          _id: id,
+          brandId: brandId
+        });
+
+
+      if (!field) {
+        return res.status(404).json({
+          success: false,
+          message: "Custom field not found"
+        });
+      }
+
+
+      res.json({
+        success: true,
+        message: "Custom field deleted",
+        field
+      });
+
+
+    } catch (err) {
+
+      console.error(
+        "Delete Custom Field Error:",
+        err
+      );
+
+      res.status(500).json({
+        success: false,
+        message: err.message
+      });
+    }
+  }
+);
+
 global.Product = Product;
 const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
