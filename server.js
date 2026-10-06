@@ -87,6 +87,142 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 
 const Product = require("./models/Product");
 const CustomField = require("./models/CustomField");
+
+/* =========================================================
+   CUSTOM FIELDS
+   ========================================================= */
+
+// GET CUSTOM FIELDS
+app.get(
+  "/admin/custom-fields",
+  checkAdmin,
+  async (req, res) => {
+    try {
+      const brandId = String(
+        req.query.brandId || ""
+      ).trim().toUpperCase();
+
+      if (!["FARK618", "ZYZAAL"].includes(brandId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid brandId is required"
+        });
+      }
+
+      const fields = await CustomField
+        .find({ brandId })
+        .sort({ createdAt: 1 });
+
+      res.json({
+        success: true,
+        fields
+      });
+
+    } catch (err) {
+      console.error("Get Custom Fields Error:", err);
+
+      res.status(500).json({
+        success: false,
+        message: err.message
+      });
+    }
+  }
+);
+
+
+// CREATE CUSTOM FIELD
+app.post(
+  "/admin/custom-fields",
+  checkAdmin,
+  async (req, res) => {
+    try {
+
+      const {
+        brandId,
+        name,
+        type,
+        options,
+        description,
+        required,
+        showInImport,
+        active
+      } = req.body;
+
+      const cleanBrandId =
+        String(brandId || "")
+          .trim()
+          .toUpperCase();
+
+      const cleanName =
+        String(name || "").trim();
+
+      if (!["FARK618", "ZYZAAL"].includes(cleanBrandId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid brandId is required"
+        });
+      }
+
+      if (!cleanName) {
+        return res.status(400).json({
+          success: false,
+          message: "Field name is required"
+        });
+      }
+
+      const existing =
+        await CustomField.findOne({
+          brandId: cleanBrandId,
+          name: cleanName
+        });
+
+      if (existing) {
+        return res.status(409).json({
+          success: false,
+          message: "Field already exists"
+        });
+      }
+
+      const field = new CustomField({
+        brandId: cleanBrandId,
+        name: cleanName,
+        type: type || "text",
+        options: Array.isArray(options)
+          ? options
+          : [],
+        description:
+          description || "",
+        required:
+          Boolean(required),
+        showInImport:
+          Boolean(showInImport),
+        active:
+          active !== false
+      });
+
+      await field.save();
+
+      res.json({
+        success: true,
+        message: "Custom field created",
+        field
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Create Custom Field Error:",
+        err
+      );
+
+      res.status(500).json({
+        success: false,
+        message: err.message
+      });
+    }
+  }
+);
+
 global.Product = Product;
 const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
