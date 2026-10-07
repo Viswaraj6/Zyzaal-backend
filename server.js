@@ -1798,8 +1798,8 @@ const ean = clean(get(row, "EAN"));
           });
         }
 
-        if (!productMap.has(styleNo)) {
-          productMap.set(styleNo, {
+      if (!productMap.has(productKey)) {
+         productMap.set(productKey, {
             name: clean(get(row, "Product Name")),
             gender: clean(get(row, "Gender")),
             styleNo,
