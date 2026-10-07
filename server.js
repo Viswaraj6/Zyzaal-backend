@@ -1629,9 +1629,9 @@ app.post(
             continue;
           }
 
-          const shouldUpdate = field =>
-            overwriteFields.includes(field) &&
-            selected(field);
+         const shouldUpdate = field =>
+  overwriteFields.includes(field) &&
+  !!mapping[field];
 
           /* Product-level fields */
           if (shouldUpdate("Product Name"))
