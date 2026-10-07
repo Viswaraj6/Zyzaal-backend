@@ -1722,9 +1722,17 @@ if (!product) {
                 clean(v.sku).toUpperCase() ===
                 matchValue.toUpperCase()
               )
-            : product.variants.find(v =>
-                clean(v.barcode) === matchValue
-              );
+            : product.variants.find(v => {
+    const dbBarcode = clean(v.barcode);
+
+    return (
+      dbBarcode === matchValue ||
+      (
+        dbBarcode !== "" &&
+        Number(dbBarcode) === Number(matchValue)
+      )
+    );
+  });
 
           if (!variant) {
             notFound++;
