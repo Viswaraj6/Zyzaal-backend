@@ -1580,20 +1580,10 @@ app.post(
 
       const requiredFields = [
         "Product Name",
-        "Gender",
-        "Category",
-        "Style No",
-        "Colour",
-        "Size",
-        "SKU",
-        "Barcode",
-        "HSN Code",
-        "Purchase Rate",
-        "MRP",
-        "Selling Price",
-        "Opening Stock",
-        "Warehouse",
-        "GST Type"
+  "Barcode",
+  "MRP",
+  "Warehouse",
+  "Opening Stock"
       ];
 
       if (mode === "new") {
