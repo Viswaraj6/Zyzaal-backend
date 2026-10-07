@@ -1488,6 +1488,459 @@ app.post(
 
   }
 );
+
+/* =========================================================
+   ADMIN PRODUCT EXCEL IMPORT V2
+   Dynamic Excel Header Mapping + Custom Fields
+   ========================================================= */
+
+app.post(
+  "/admin/products/import-v2",
+  checkAdmin,
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      const brandId = String(req.body.brandId || "")
+        .trim()
+        .toUpperCase();
+
+      if (!["FARK618", "ZYZAAL"].includes(brandId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid brandId is required"
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "No Excel file uploaded"
+        });
+      }
+
+      const mode = req.body.mode === "overwrite"
+        ? "overwrite"
+        : "new";
+
+      const matchField =
+        req.body.matchField === "SKU"
+          ? "SKU"
+          : "Barcode";
+
+      const mapping = JSON.parse(req.body.mapping || "{}");
+      const fields = JSON.parse(req.body.fields || "[]");
+      const overwriteFields = JSON.parse(
+        req.body.overwriteFields || "[]"
+      );
+
+      const workbook = XLSX.read(req.file.buffer, {
+        type: "buffer"
+      });
+
+      const sheetName = workbook.SheetNames[0];
+      if (!sheetName) {
+        return res.status(400).json({
+          success: false,
+          message: "No worksheet found"
+        });
+      }
+
+      const rows = XLSX.utils.sheet_to_json(
+        workbook.Sheets[sheetName],
+        { defval: "", raw: true }
+      );
+
+      if (!rows.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Excel file is empty"
+        });
+      }
+
+      const clean = value => {
+        if (value === null || value === undefined) return "";
+        return String(value).trim();
+      };
+
+      const numberValue = value => {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : 0;
+      };
+
+      const get = (row, ourField) => {
+        const excelHeader = mapping[ourField];
+        if (!excelHeader) return "";
+        return row[excelHeader] === undefined
+          ? ""
+          : row[excelHeader];
+      };
+
+      const selected = field =>
+        fields.includes(field) && !!mapping[field];
+
+      const requiredFields = [
+        "Product Name",
+        "Gender",
+        "Category",
+        "Style No",
+        "Colour",
+        "Size",
+        "SKU",
+        "Barcode",
+        "HSN Code",
+        "Purchase Rate",
+        "MRP",
+        "Selling Price",
+        "Opening Stock",
+        "Warehouse",
+        "GST Type"
+      ];
+
+      if (mode === "new") {
+        const unmapped = requiredFields.filter(
+          field => !mapping[field]
+        );
+
+        if (unmapped.length) {
+          return res.status(400).json({
+            success: false,
+            message: "Required field mapping missing",
+            fields: unmapped
+          });
+        }
+      }
+
+      /* =====================================================
+         OVERWRITE EXISTING
+         Only selected/mapped fields are changed.
+         ===================================================== */
+      if (mode === "overwrite") {
+        let updated = 0;
+        let notFound = 0;
+
+        for (const row of rows) {
+          const matchValue = clean(
+            get(row, matchField)
+          );
+
+          if (!matchValue) {
+            notFound++;
+            continue;
+          }
+
+          const query = matchField === "SKU"
+            ? { brandId, "variants.sku": matchValue }
+            : { brandId, "variants.barcode": matchValue };
+
+          const product = await Product.findOne(query);
+
+          if (!product) {
+            notFound++;
+            continue;
+          }
+
+          const shouldUpdate = field =>
+            overwriteFields.includes(field) &&
+            selected(field);
+
+          /* Product-level fields */
+          if (shouldUpdate("Product Name"))
+            product.name = clean(get(row, "Product Name"));
+
+          if (shouldUpdate("Gender"))
+            product.gender = clean(get(row, "Gender"));
+
+          if (shouldUpdate("Category"))
+            product.category = clean(get(row, "Category"));
+
+          if (shouldUpdate("Style No"))
+            product.styleNo = clean(get(row, "Style No"));
+
+          if (shouldUpdate("HSN Code"))
+            product.hsnCode = clean(get(row, "HSN Code"));
+
+          /* Optional system fields */
+          if (shouldUpdate("Brand"))
+            product.brand = clean(get(row, "Brand"));
+
+          if (shouldUpdate("Fabric"))
+            product.fabric = clean(get(row, "Fabric"));
+
+          if (shouldUpdate("Type Detail"))
+            product.typeDetail = clean(get(row, "Type Detail"));
+
+          if (shouldUpdate("Fit"))
+            product.fit = clean(get(row, "Fit"));
+
+          if (shouldUpdate("Pattern"))
+            product.pattern = clean(get(row, "Pattern"));
+
+          if (shouldUpdate("Occasion"))
+            product.occasion = clean(get(row, "Occasion"));
+
+          if (shouldUpdate("Description"))
+            product.description = clean(get(row, "Description"));
+
+          /* Custom fields */
+          const customNames = fields.filter(
+            field =>
+              !requiredFields.includes(field) &&
+              ![
+                "Colour Code", "Brand", "Fabric",
+                "Type Detail", "Fit", "Pattern",
+                "Occasion", "Description"
+              ].includes(field)
+          );
+
+          for (const fieldName of customNames) {
+            if (!shouldUpdate(fieldName)) continue;
+            if (!product.customFields) product.customFields = {};
+            product.customFields[fieldName] = clean(
+              get(row, fieldName)
+            );
+          }
+
+          /* Variant-level fields */
+          let variant = matchField === "SKU"
+            ? product.variants.find(v =>
+                clean(v.sku).toUpperCase() ===
+                matchValue.toUpperCase()
+              )
+            : product.variants.find(v =>
+                clean(v.barcode) === matchValue
+              );
+
+          if (!variant) {
+            notFound++;
+            continue;
+          }
+
+          if (shouldUpdate("Colour"))
+            variant.colour = clean(get(row, "Colour"));
+
+          if (shouldUpdate("Colour Code"))
+            variant.colourCode = clean(get(row, "Colour Code"));
+
+          if (shouldUpdate("Size"))
+            variant.size = clean(get(row, "Size"));
+
+          if (shouldUpdate("SKU"))
+            variant.sku = clean(get(row, "SKU"));
+
+          if (shouldUpdate("Barcode"))
+            variant.barcode = clean(get(row, "Barcode"));
+
+          if (shouldUpdate("EAN"))
+            variant.ean = clean(get(row, "EAN"));
+
+          if (shouldUpdate("Purchase Rate"))
+            variant.purchaseRate = numberValue(get(row, "Purchase Rate"));
+
+          if (shouldUpdate("MRP"))
+            variant.mrp = numberValue(get(row, "MRP"));
+
+          if (shouldUpdate("Selling Price")) {
+            variant.sellingPrice = numberValue(get(row, "Selling Price"));
+            product.price = variant.sellingPrice;
+          }
+
+          if (shouldUpdate("Opening Stock")) {
+            variant.openingStock = numberValue(get(row, "Opening Stock"));
+            variant.stock = variant.openingStock;
+          }
+
+          if (shouldUpdate("Warehouse"))
+            variant.warehouse = clean(get(row, "Warehouse"));
+
+          if (shouldUpdate("GST Type"))
+            variant.gstType = clean(get(row, "GST Type"));
+
+          product.lastSync = new Date();
+          await product.save();
+          updated++;
+        }
+
+        return res.json({
+          success: true,
+          message: "Selected fields updated successfully",
+          mode,
+          productsImported: updated,
+          notFound
+        });
+      }
+
+      /* =====================================================
+         NEW PRODUCTS
+         ===================================================== */
+      const barcodeSet = new Set();
+      const productMap = new Map();
+
+      for (const row of rows) {
+        const styleNo = clean(get(row, "Style No"));
+        const barcode = clean(get(row, "Barcode"));
+        const ean = clean(get(row, "EAN"));
+
+        if (!styleNo || !barcode) {
+          return res.status(400).json({
+            success: false,
+            message: "Style No and Barcode are required"
+          });
+        }
+
+        if (barcodeSet.has(barcode)) {
+          return res.status(400).json({
+            success: false,
+            message: `Duplicate Barcode in Excel: ${barcode}`
+          });
+        }
+        barcodeSet.add(barcode);
+
+        const existing = await Product.findOne({
+          brandId,
+          "variants.barcode": barcode
+        }).lean();
+
+        if (existing) {
+          return res.status(400).json({
+            success: false,
+            message: `Barcode already exists: ${barcode}`
+          });
+        }
+
+        if (!productMap.has(styleNo)) {
+          productMap.set(styleNo, {
+            name: clean(get(row, "Product Name")),
+            gender: clean(get(row, "Gender")),
+            styleNo,
+            category: clean(get(row, "Category")),
+            hsnCode: clean(get(row, "HSN Code")),
+            variants: [],
+            customFields: {}
+          });
+        }
+
+        const productData = productMap.get(styleNo);
+
+        /* Optional product fields */
+        const optionalMap = {
+          Brand: "brand",
+          Fabric: "fabric",
+          "Type Detail": "typeDetail",
+          Fit: "fit",
+          Pattern: "pattern",
+          Occasion: "occasion",
+          Description: "description"
+        };
+
+        for (const [ourField, property] of Object.entries(optionalMap)) {
+          if (selected(ourField)) {
+            productData[property] = clean(get(row, ourField));
+          }
+        }
+
+        /* Custom fields */
+        for (const fieldName of fields) {
+          if (
+            requiredFields.includes(fieldName) ||
+            [
+              "Colour Code", "Brand", "Fabric",
+              "Type Detail", "Fit", "Pattern",
+              "Occasion", "Description"
+            ].includes(fieldName)
+          ) continue;
+
+          if (selected(fieldName)) {
+            productData.customFields[fieldName] = clean(
+              get(row, fieldName)
+            );
+          }
+        }
+
+        const openingStock = numberValue(
+          get(row, "Opening Stock")
+        );
+
+        productData.variants.push({
+          colour: clean(get(row, "Colour")),
+          colourCode: clean(get(row, "Colour Code")),
+          size: clean(get(row, "Size")),
+          sku: clean(get(row, "SKU")).toUpperCase(),
+          barcode,
+          ean: ean || undefined,
+          purchaseRate: numberValue(get(row, "Purchase Rate")),
+          mrp: numberValue(get(row, "MRP")),
+          sellingPrice: numberValue(get(row, "Selling Price")),
+          openingStock,
+          stock: openingStock,
+          warehouse: clean(get(row, "Warehouse")),
+          gstType: clean(get(row, "GST Type"))
+        });
+      }
+
+      const importedProducts = [];
+
+      for (const productData of productMap.values()) {
+        const totalStock = productData.variants.reduce(
+          (sum, variant) => sum + Number(variant.stock || 0),
+          0
+        );
+
+        const firstVariant = productData.variants[0];
+
+        const product = new Product({
+          brandId,
+          name: productData.name,
+          gender: productData.gender,
+          styleNo: productData.styleNo,
+          category: productData.category,
+          hsnCode: productData.hsnCode,
+          brand: productData.brand,
+          fabric: productData.fabric,
+          typeDetail: productData.typeDetail,
+          fit: productData.fit,
+          pattern: productData.pattern,
+          occasion: productData.occasion,
+          description: productData.description,
+          customFields: productData.customFields,
+          price: firstVariant.sellingPrice,
+          stock: totalStock,
+          variants: productData.variants,
+          sizes: [
+            ...new Set(
+              productData.variants.map(v => v.size).filter(Boolean)
+            )
+          ],
+          lastSync: new Date()
+        });
+
+        await product.save();
+        importedProducts.push(product);
+      }
+
+      return res.json({
+        success: true,
+        message: "Products imported successfully",
+        mode,
+        productsImported: importedProducts.length,
+        variantsImported: rows.length,
+        totalStock: importedProducts.reduce(
+          (sum, product) => sum + Number(product.stock || 0),
+          0
+        )
+      });
+
+    } catch (error) {
+      console.error("Product Excel Import V2 Error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Product import failed",
+        error: error.message
+      });
+    }
+  }
+);
+
+
 app.post("/check-user", async (req, res) => {
 
   const { phone } = req.body;
