@@ -1851,7 +1851,7 @@ app.post(
         /* Custom fields */
         for (const fieldName of fields) {
           if (
-            requiredFields.includes(fieldName) ||
+          mandatoryFields.includes(fieldName) ||
             [
               "Colour Code", "Brand", "Fabric",
               "Type Detail", "Fit", "Pattern",
