@@ -1866,9 +1866,7 @@ app.post(
           }
         }
 
-        const openingStock = numberValue(
-          get(row, "Opening Stock")
-        );
+       
 
         productData.variants.push({
           colour: clean(get(row, "Colour")),
