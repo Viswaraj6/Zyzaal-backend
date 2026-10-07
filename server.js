@@ -1810,8 +1810,7 @@ const ean = clean(get(row, "EAN"));
           });
         }
 
-        const productData = productMap.get(styleNo);
-
+        const productData = productMap.get(productKey);
         /* Optional product fields */
         const optionalMap = {
           Brand: "brand",
