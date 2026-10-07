@@ -1578,13 +1578,13 @@ app.post(
       const selected = field =>
         fields.includes(field) && !!mapping[field];
 
-      const requiredFields = [
-        "Product Name",
+    const mandatoryFields = [
+  "Product Name",
   "Barcode",
   "MRP",
   "Warehouse",
   "Opening Stock"
-      ];
+];
 
       if (mode === "new") {
        const unmapped = mandatoryFields.filter(
