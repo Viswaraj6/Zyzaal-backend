@@ -1784,13 +1784,23 @@ if (!product) {
           updated++;
         }
 
-        return res.json({
-          success: true,
-          message: "Selected fields updated successfully",
-          mode,
-          productsImported: updated,
-          notFound
-        });
+       if (notFound > 0) {
+  return res.status(400).json({
+    success: false,
+    message: `${notFound} product(s) not found. No update was made for those rows.`,
+    mode,
+    productsImported: updated,
+    notFound
+  });
+}
+
+return res.json({
+  success: true,
+  message: "Selected fields updated successfully",
+  mode,
+  productsImported: updated,
+  notFound: 0
+});
       }
 
       /* =====================================================
