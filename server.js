@@ -1767,8 +1767,9 @@ app.post(
 
       for (const row of rows) {
         const styleNo = clean(get(row, "Style No"));
-        const barcode = clean(get(row, "Barcode"));
-        const ean = clean(get(row, "EAN"));
+const productKey = styleNo || `ROW-${rows.indexOf(row) + 2}`;
+const barcode = clean(get(row, "Barcode"));
+const ean = clean(get(row, "EAN"));
 
        if (!barcode) {
   return res.status(400).json({
