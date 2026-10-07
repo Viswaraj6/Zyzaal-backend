@@ -1674,7 +1674,7 @@ app.post(
           /* Custom fields */
           const customNames = fields.filter(
             field =>
-              !requiredFields.includes(field) &&
+             !mandatoryFields.includes(field) &&
               ![
                 "Colour Code", "Brand", "Fabric",
                 "Type Detail", "Fit", "Pattern",
