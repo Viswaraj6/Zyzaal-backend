@@ -1609,20 +1609,43 @@ app.post(
         let notFound = 0;
 
         for (const row of rows) {
-          const matchValue = clean(
-            get(row, matchField)
-          );
+         const matchValue = clean(get(row, matchField));
 
-          if (!matchValue) {
-            notFound++;
-            continue;
-          }
+if (!matchValue) {
+  notFound++;
+  continue;
+}
 
-          const query = matchField === "SKU"
-            ? { brandId, "variants.sku": matchValue }
-            : { brandId, "variants.barcode": matchValue };
+console.log("IMPORT MATCH:", {
+  brandId,
+  matchField,
+  matchValue
+});
 
-          const product = await Product.findOne(query);
+let product;
+
+if (matchField === "SKU") {
+  product = await Product.findOne({
+    brandId,
+    "variants.sku": matchValue.toUpperCase()
+  });
+} else {
+  product = await Product.findOne({
+    brandId,
+    "variants.barcode": matchValue
+  });
+}
+
+console.log("MATCHED PRODUCT:", {
+  found: !!product,
+  productId: product?._id,
+  brandId: product?.brandId
+});
+
+if (!product) {
+  notFound++;
+  continue;
+}
 
           if (!product) {
             notFound++;
