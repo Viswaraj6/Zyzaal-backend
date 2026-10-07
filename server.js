@@ -1490,6 +1490,96 @@ app.post(
 );
 
 /* =========================================================
+   CHECK OVERWRITE MATCHES BEFORE IMPORT
+   ========================================================= */
+
+app.post(
+  "/admin/products/check-import-matches",
+  checkAdmin,
+  async (req, res) => {
+    try {
+      const brandId = String(req.body.brandId || "")
+        .trim()
+        .toUpperCase();
+
+      const matchField =
+        req.body.matchField === "SKU"
+          ? "SKU"
+          : "Barcode";
+
+      const values = Array.isArray(req.body.values)
+        ? req.body.values
+        : [];
+
+      if (!["FARK618", "ZYZAAL"].includes(brandId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid brandId is required"
+        });
+      }
+
+      const cleanValues = [
+        ...new Set(
+          values
+            .map(value => String(value ?? "").trim())
+            .filter(Boolean)
+        )
+      ];
+
+      const found = [];
+      const notFound = [];
+
+      for (const value of cleanValues) {
+
+        let product = null;
+
+        if (matchField === "SKU") {
+
+          product = await Product.findOne({
+            brandId,
+            "variants.sku": value.toUpperCase()
+          }).lean();
+
+        } else {
+
+          product = await Product.findOne({
+            brandId,
+            "variants.barcode": value
+          }).lean();
+
+        }
+
+        if (product) {
+          found.push(value);
+        } else {
+          notFound.push(value);
+        }
+      }
+
+      return res.json({
+        success: true,
+        matchField,
+        found,
+        notFound
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Check Import Matches Error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "Unable to check existing products",
+        error: error.message
+      });
+    }
+  }
+);
+  
+/* =========================================================
    ADMIN PRODUCT EXCEL IMPORT V2
    Dynamic Excel Header Mapping + Custom Fields
    ========================================================= */
