@@ -1765,18 +1765,38 @@ app.post(
       const barcodeSet = new Set();
       const productMap = new Map();
 
-      for (const row of rows) {
-        const styleNo = clean(get(row, "Style No"));
-const productKey = styleNo || `ROW-${rows.indexOf(row) + 2}`;
-const barcode = clean(get(row, "Barcode"));
-const ean = clean(get(row, "EAN"));
+     for (const row of rows) {
+  const styleNo = clean(get(row, "Style No"));
+  const productKey = styleNo || `ROW-${rows.indexOf(row) + 2}`;
+  const barcode = clean(get(row, "Barcode"));
+  const ean = clean(get(row, "EAN"));
 
-       if (!barcode) {
-  return res.status(400).json({
-    success: false,
-    message: `Barcode is required at Excel row ${rows.indexOf(row) + 2}`
-  });
-}
+  if (!barcode) {
+    return res.status(400).json({
+      success: false,
+      message: `Barcode is required at Excel row ${rows.indexOf(row) + 2}`
+    });
+  }
+
+  const productName = clean(get(row, "Product Name"));
+  const mrpRaw = get(row, "MRP");
+  const mrp = numberValue(mrpRaw);
+  const warehouse = clean(get(row, "Warehouse"));
+  const openingStockRaw = get(row, "Opening Stock");
+  const openingStock = numberValue(openingStockRaw);
+
+  if (
+    !productName ||
+    !barcode ||
+    !warehouse ||
+    mrpRaw === "" ||
+    openingStockRaw === ""
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: `Mandatory field missing at Excel row ${rows.indexOf(row) + 2}`
+    });
+  }
 
         if (barcodeSet.has(barcode)) {
           return res.status(400).json({
