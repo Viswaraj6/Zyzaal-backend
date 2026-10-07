@@ -1770,12 +1770,12 @@ app.post(
         const barcode = clean(get(row, "Barcode"));
         const ean = clean(get(row, "EAN"));
 
-        if (!styleNo || !barcode) {
-          return res.status(400).json({
-            success: false,
-            message: "Style No and Barcode are required"
-          });
-        }
+       if (!barcode) {
+  return res.status(400).json({
+    success: false,
+    message: `Barcode is required at Excel row ${rows.indexOf(row) + 2}`
+  });
+}
 
         if (barcodeSet.has(barcode)) {
           return res.status(400).json({
