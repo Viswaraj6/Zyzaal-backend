@@ -1587,9 +1587,9 @@ app.post(
       ];
 
       if (mode === "new") {
-        const unmapped = requiredFields.filter(
-          field => !mapping[field]
-        );
+       const unmapped = mandatoryFields.filter(
+  field => !mapping[field]
+);
 
         if (unmapped.length) {
           return res.status(400).json({
