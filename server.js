@@ -1630,10 +1630,13 @@ if (matchField === "SKU") {
     "variants.sku": matchValue.toUpperCase()
   });
 } else {
-  product = await Product.findOne({
-    brandId,
-    "variants.barcode": matchValue
-  });
+ product = await Product.findOne({
+  brandId,
+  $or: [
+    { "variants.barcode": matchValue },
+    { "variants.barcode": Number(matchValue) }
+  ]
+});
 }
 
 console.log("MATCHED PRODUCT:", {
