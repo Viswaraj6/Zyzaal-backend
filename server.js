@@ -3878,6 +3878,47 @@ app.patch("/pos/bills/:id/payments", async (req, res) => {
     }
 });
 
+
+/* ================= CLOSE INVOICE ================= */
+
+app.patch("/pos/bills/:id/close", async (req, res) => {
+    try {
+        const bill = await POSBill.findById(req.params.id);
+
+        if (!bill) {
+            return res.status(404).json({
+                success: false,
+                message: "Invoice not found"
+            });
+        }
+
+        if (bill.invoiceStatus === "Closed") {
+            return res.status(400).json({
+                success: false,
+                message: "Invoice is already closed"
+            });
+        }
+
+        bill.invoiceStatus = "Closed";
+        bill.closedAt = new Date();
+
+        await bill.save();
+
+        return res.json({
+            success: true,
+            message: "Invoice closed successfully",
+            bill
+        });
+
+    } catch (err) {
+        console.error("CLOSE INVOICE ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+});
     
 /* ================= UPDATE INVOICE ================= 
 
