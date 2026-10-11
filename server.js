@@ -3782,6 +3782,7 @@ app.put("/pos/bills/:id", async (req, res) => {
 });
 
 
+
 /* ================= UPDATE INVOICE PAYMENTS ================= */
 
 app.patch("/pos/bills/:id/payments", async (req, res) => {
@@ -3804,58 +3805,18 @@ app.patch("/pos/bills/:id/payments", async (req, res) => {
             });
         }
 
-       
-const existingPayments = Array.isArray(bill.payments)
-    ? bill.payments
-    : [];
+        const existingPayments = Array.isArray(bill.payments)
+            ? bill.payments
+            : [];
 
-if (bill.invoiceStatus === "Closed") {
-    const incomingPayments = Array.isArray(payments) ? payments : [];
-
-    // Existing payments must remain unchanged.
-    const oldPaymentsUnchanged =
-        incomingPayments.length >= existingPayments.length &&
-        existingPayments.every((oldPayment, index) => {
-            const newPayment = incomingPayments[index];
-
-            const oldMode = String(
-                oldPayment.mode || oldPayment.method || ""
-            ).trim();
-
-            const newMode = String(
-                newPayment?.mode || newPayment?.method || ""
-            ).trim();
-
-            return oldMode === newMode &&
-                Number(oldPayment.amount || 0) ===
-                Number(newPayment?.amount || 0);
-        });
-
-    if (!oldPaymentsUnchanged) {
-        return res.status(400).json({
-            success: false,
-            message: "Existing payments on a closed invoice cannot be changed or removed."
-        });
-    }
-
-    const oldTotal = existingPayments.reduce(
-        (sum, payment) => sum + Number(payment.amount || 0),
-        0
-    );
-
-    const newTotal = incomingPayments.reduce(
-        (sum, payment) => sum + Number(payment.amount || 0),
-        0
-    );
-
-    if (newTotal <= oldTotal) {
-        return res.status(400).json({
-            success: false,
-            message: "Add the pending payment amount to continue."
-        });
-    }
-}
-
+        // Existing payment rows cannot be removed.
+        // Their amount and mode can be edited, and new rows can be added.
+        if (payments.length < existingPayments.length) {
+            return res.status(400).json({
+                success: false,
+                message: "Existing payment rows cannot be removed"
+            });
+        }
 
         const allowedModes = [
             "Cash",
@@ -3864,14 +3825,15 @@ if (bill.invoiceStatus === "Closed") {
             "Credit Note"
         ];
 
+        const updatedPayments = [];
         let totalPaid = 0;
 
         for (const payment of payments) {
             const mode = String(
-                payment.mode || payment.method || ""
+                payment?.mode || payment?.method || ""
             ).trim();
 
-            const amount = Number(payment.amount);
+            const amount = Number(payment?.amount);
 
             if (
                 !allowedModes.includes(mode) ||
@@ -3883,6 +3845,16 @@ if (bill.invoiceStatus === "Closed") {
                     message: "Invalid payment mode or amount"
                 });
             }
+
+            updatedPayments.push({
+                ...(
+                    payment && typeof payment === "object"
+                        ? payment
+                        : {}
+                ),
+                mode,
+                amount
+            });
 
             totalPaid += amount;
         }
@@ -3896,7 +3868,9 @@ if (bill.invoiceStatus === "Closed") {
             });
         }
 
-        bill.payments = payments;
+        // Update only payment details.
+        // Invoice items and stock are not touched here.
+        bill.payments = updatedPayments;
 
         if (totalPaid <= 0) {
             bill.paymentStatus = "Pending";
