@@ -3781,6 +3781,104 @@ app.put("/pos/bills/:id", async (req, res) => {
 
 });
 
+
+/* ================= UPDATE INVOICE PAYMENTS ================= */
+
+app.patch("/pos/bills/:id/payments", async (req, res) => {
+    try {
+        const { payments } = req.body;
+
+        if (!Array.isArray(payments)) {
+            return res.status(400).json({
+                success: false,
+                message: "Payments must be an array"
+            });
+        }
+
+        const bill = await POSBill.findById(req.params.id);
+
+        if (!bill) {
+            return res.status(404).json({
+                success: false,
+                message: "Invoice not found"
+            });
+        }
+
+        if (bill.invoiceStatus === "Closed") {
+            return res.status(400).json({
+                success: false,
+                message: "Closed invoice cannot be edited"
+            });
+        }
+
+        const allowedModes = [
+            "Cash",
+            "Card",
+            "UPI",
+            "Credit Note"
+        ];
+
+        let totalPaid = 0;
+
+        for (const payment of payments) {
+            const mode = String(
+                payment.mode || payment.method || ""
+            ).trim();
+
+            const amount = Number(payment.amount);
+
+            if (
+                !allowedModes.includes(mode) ||
+                !Number.isFinite(amount) ||
+                amount < 0
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid payment mode or amount"
+                });
+            }
+
+            totalPaid += amount;
+        }
+
+        const grandTotal = Number(bill.grandTotal || 0);
+
+        if (totalPaid > grandTotal + 0.01) {
+            return res.status(400).json({
+                success: false,
+                message: "Payment total cannot exceed invoice total"
+            });
+        }
+
+        bill.payments = payments;
+
+        if (totalPaid <= 0) {
+            bill.paymentStatus = "Pending";
+        } else if (totalPaid + 0.01 >= grandTotal) {
+            bill.paymentStatus = "Paid";
+        } else {
+            bill.paymentStatus = "Partial";
+        }
+
+        await bill.save();
+
+        return res.json({
+            success: true,
+            message: "Payment updated successfully",
+            bill
+        });
+
+    } catch (err) {
+        console.error("PAYMENT UPDATE ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+});
+
+    
 /* ================= UPDATE INVOICE ================= 
 
 app.put("/pos/bills/:id", async (req, res) => {
