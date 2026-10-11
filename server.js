@@ -3919,7 +3919,50 @@ app.patch("/pos/bills/:id/close", async (req, res) => {
         });
     }
 });
-    
+
+
+/* ================= REOPEN INVOICE ================= */
+
+app.patch("/pos/bills/:id/reopen", async (req, res) => {
+    try {
+        const bill = await POSBill.findById(req.params.id);
+
+        if (!bill) {
+            return res.status(404).json({
+                success: false,
+                message: "Invoice not found"
+            });
+        }
+
+        if (bill.invoiceStatus !== "Closed") {
+            return res.status(400).json({
+                success: false,
+                message: "Invoice is already open"
+            });
+        }
+
+        bill.invoiceStatus = "Open";
+        bill.closedAt = null;
+
+        await bill.save();
+
+        return res.json({
+            success: true,
+            message: "Invoice reopened successfully",
+            bill
+        });
+
+    } catch (err) {
+        console.error("REOPEN INVOICE ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+});
+
+   
 /* ================= UPDATE INVOICE ================= 
 
 app.put("/pos/bills/:id", async (req, res) => {
