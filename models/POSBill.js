@@ -26,6 +26,25 @@ const POSBillSchema = new mongoose.Schema({
 
     grandTotal: Number,
 
+    
+invoiceStatus: {
+    type: String,
+    enum: ["Open", "Closed"],
+    default: "Open"
+},
+
+paymentStatus: {
+    type: String,
+    enum: ["Pending", "Partial", "Paid"],
+    default: "Pending"
+},
+
+closedAt: {
+    type: Date,
+    default: null
+},
+
+    
     createdAt: {
         type: Date,
         default: Date.now
