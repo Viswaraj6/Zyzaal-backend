@@ -3804,12 +3804,58 @@ app.patch("/pos/bills/:id/payments", async (req, res) => {
             });
         }
 
-        if (bill.invoiceStatus === "Closed") {
-            return res.status(400).json({
-                success: false,
-                message: "Closed invoice cannot be edited"
-            });
-        }
+       
+const existingPayments = Array.isArray(bill.payments)
+    ? bill.payments
+    : [];
+
+if (bill.invoiceStatus === "Closed") {
+    const incomingPayments = Array.isArray(payments) ? payments : [];
+
+    // Existing payments must remain unchanged.
+    const oldPaymentsUnchanged =
+        incomingPayments.length >= existingPayments.length &&
+        existingPayments.every((oldPayment, index) => {
+            const newPayment = incomingPayments[index];
+
+            const oldMode = String(
+                oldPayment.mode || oldPayment.method || ""
+            ).trim();
+
+            const newMode = String(
+                newPayment?.mode || newPayment?.method || ""
+            ).trim();
+
+            return oldMode === newMode &&
+                Number(oldPayment.amount || 0) ===
+                Number(newPayment?.amount || 0);
+        });
+
+    if (!oldPaymentsUnchanged) {
+        return res.status(400).json({
+            success: false,
+            message: "Existing payments on a closed invoice cannot be changed or removed."
+        });
+    }
+
+    const oldTotal = existingPayments.reduce(
+        (sum, payment) => sum + Number(payment.amount || 0),
+        0
+    );
+
+    const newTotal = incomingPayments.reduce(
+        (sum, payment) => sum + Number(payment.amount || 0),
+        0
+    );
+
+    if (newTotal <= oldTotal) {
+        return res.status(400).json({
+            success: false,
+            message: "Add the pending payment amount to continue."
+        });
+    }
+}
+
 
         const allowedModes = [
             "Cash",
