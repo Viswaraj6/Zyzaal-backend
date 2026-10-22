@@ -430,6 +430,197 @@ global.Product = Product;
 const POSBill = require("./models/POSBill");
 const Customer = require("./models/Customer");
 
+
+/* ==========================================
+   ZYZAAL - SALES BY PRODUCT REPORT
+========================================== */
+
+app.get(
+    "/admin/reports/sales-by-product",
+    checkAdmin,
+    async (req, res) => {
+        try {
+            const brandId = String(
+                req.query.brandId || ""
+            ).trim().toUpperCase();
+
+            if (brandId !== "ZYZAAL") {
+                return res.status(400).json({
+                    success: false,
+                    message: "Valid brandId is required"
+                });
+            }
+
+            const from = req.query.from
+                ? new Date(req.query.from)
+                : null;
+
+            const to = req.query.to
+                ? new Date(req.query.to)
+                : null;
+
+            if (
+                (from && Number.isNaN(from.getTime())) ||
+                (to && Number.isNaN(to.getTime()))
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid date range"
+                });
+            }
+
+            if (from && to && from > to) {
+                return res.status(400).json({
+                    success: false,
+                    message: "From date must precede To date"
+                });
+            }
+
+            const billFilter = {
+                brandId,
+                invoiceStatus: "Closed"
+            };
+
+            if (from || to) {
+                billFilter.createdAt = {};
+
+                if (from) {
+                    billFilter.createdAt.$gte = from;
+                }
+
+                if (to) {
+                    // Include the complete selected end date.
+                    const endDate = new Date(to);
+                    endDate.setHours(23, 59, 59, 999);
+
+                    billFilter.createdAt.$lte = endDate;
+                }
+            }
+
+            const [bills, products] = await Promise.all([
+                POSBill.find(billFilter).lean(),
+
+                Product.find({ brandId })
+                    .select(
+                        "name styleNo category gender stock variants"
+                    )
+                    .lean()
+            ]);
+
+            const productMap = new Map(
+                products.map(product => [
+                    String(product._id),
+                    product
+                ])
+            );
+
+            const reportMap = new Map();
+
+            for (const bill of bills) {
+                for (const item of bill.items || []) {
+                    const productId =
+                        String(item.productId || "");
+
+                    const product =
+                        productMap.get(productId);
+
+                    // Do not mix in items belonging to
+                    // another brand or unknown products.
+                    if (!product) continue;
+
+                    const qty = Number(item.qty || 0);
+                    const price = Number(item.price || 0);
+
+                    if (
+                        !Number.isFinite(qty) ||
+                        !Number.isFinite(price) ||
+                        qty <= 0 ||
+                        price < 0
+                    ) {
+                        continue;
+                    }
+
+                    const key = productId;
+
+                    if (!reportMap.has(key)) {
+                        reportMap.set(key, {
+                            productId,
+                            name: product.name || "",
+                            styleNo: product.styleNo || "",
+                            category: product.category || "",
+                            gender: product.gender || "",
+                            quantitySold: 0,
+                            salesAmount: 0,
+                            stockLeft: Number(product.stock || 0),
+                            coloursSold: new Set(),
+                            sizesSold: new Set()
+                        });
+                    }
+
+                    const row = reportMap.get(key);
+
+                    row.quantitySold += qty;
+
+                    // Gross item sales before invoice discount.
+                    row.salesAmount +=
+                        Number(item.amount ?? qty * price);
+
+                    if (item.colour) {
+                        row.coloursSold.add(item.colour);
+                    }
+
+                    if (item.size) {
+                        row.sizesSold.add(item.size);
+                    }
+                }
+            }
+
+            const rows = Array.from(reportMap.values())
+                .map(row => ({
+                    ...row,
+                    coloursSold: [...row.coloursSold],
+                    sizesSold: [...row.sizesSold]
+                }))
+                .sort(
+                    (a, b) =>
+                        b.quantitySold - a.quantitySold
+                );
+
+            res.json({
+                success: true,
+                brandId,
+                invoiceCount: bills.length,
+                summary: {
+                    uniqueProducts: rows.length,
+                    totalQuantitySold: rows.reduce(
+                        (sum, row) =>
+                            sum + row.quantitySold,
+                        0
+                    ),
+                    totalSalesAmount: rows.reduce(
+                        (sum, row) =>
+                            sum + row.salesAmount,
+                        0
+                    )
+                },
+                rows
+            });
+
+        } catch (err) {
+            console.error(
+                "Sales by Product Report Error:",
+                err
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Unable to load sales report"
+            });
+        }
+    }
+);
+
+
 app.post("/admin/upload-image", checkAdmin, upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
