@@ -16,7 +16,7 @@ async function getAccessToken() {
     );
 
     if (!res.data.access_token) {
-        throw new Error("Zoho access token was not returned");
+        throw new Error("Zoho access token not received");
     }
 
     return res.data.access_token;
