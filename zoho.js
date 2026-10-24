@@ -1,3 +1,4 @@
+
 const axios = require("axios");
 
 async function getAccessToken() {
@@ -14,10 +15,11 @@ async function getAccessToken() {
         }
     );
 
-    console.log(res.data);
+    if (!res.data.access_token) {
+        throw new Error("Zoho access token was not returned");
+    }
 
     return res.data.access_token;
 }
-module.exports = {
-    getAccessToken
-};
+
+module.exports = { getAccessToken };
