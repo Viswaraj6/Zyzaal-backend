@@ -4450,6 +4450,60 @@ app.delete("/orders/:id", checkAdmin, async (req, res) => {
   }
 });
 
+// TEST ZOHO TRANSFER ORDERS API
+app.get("/admin/test-transfer-orders", checkAdmin, async (req, res) => {
+    try {
+        const { getAccessToken } = require("./zoho");
+        const axios = require("axios");
+
+        const token = await getAccessToken();
+        const organizationId = process.env.ZOHO_ORGANIZATION_ID;
+
+        if (!organizationId) {
+            return res.status(500).json({
+                success: false,
+                message: "ZOHO_ORGANIZATION_ID is missing"
+            });
+        }
+
+        const response = await axios.get(
+            "https://www.zohoapis.in/inventory/v1/transferorders",
+            {
+                params: {
+                    organization_id: organizationId,
+                    per_page: 5
+                },
+                headers: {
+                    Authorization: `Zoho-oauthtoken ${token}`
+                },
+                timeout: 20000
+            }
+        );
+
+        res.json({
+            success: true,
+            totalOrders: (response.data.transfer_orders || []).length,
+            orders: (response.data.transfer_orders || []).map(order => ({
+                transferOrderNo: order.transfer_order_number,
+                transferOrderId: order.transfer_order_id,
+                date: order.date
+            }))
+        });
+
+    } catch (error) {
+        console.error(
+            "Transfer Orders API test failed:",
+            error.response?.status || error.message
+        );
+
+        res.status(error.response?.status || 500).json({
+            success: false,
+            status: error.response?.status || null,
+            error: error.response?.data?.message || "Transfer Orders API request failed"
+        });
+    }
+});
+
 app.post("/sync-sales", checkAdmin, async (req, res) => {
 
     try {
