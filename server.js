@@ -75,13 +75,6 @@ app.use(
   createInventoryRouter({ checkAdmin })
 );
 
-const createInventoryRouter = require('./inventoryRoutes');
-
-app.use(
-  '/admin/inventory',
-  createInventoryRouter({ checkAdmin })
-);
-
 
 /* ✅ DB */
 mongoose.connect(process.env.MONGO_URL)
