@@ -1,3 +1,4 @@
+
 require("dotenv").config();
 
 const axios = require("axios");
@@ -9,16 +10,15 @@ async function testTransferOrders() {
         const organizationId = process.env.ZOHO_ORGANIZATION_ID;
 
         if (!organizationId) {
-            throw new Error(
-                "ZOHO_ORGANIZATION_ID missing in .env"
-            );
+            throw new Error("ZOHO_ORGANIZATION_ID missing in environment");
         }
 
         const response = await axios.get(
-            "https://api.zakya.com/inventory/v1/transferorders",
+            "https://www.zohoapis.in/inventory/v1/transferorders",
             {
                 params: {
-                    organization_id: organizationId
+                    organization_id: organizationId,
+                    per_page: 5
                 },
                 headers: {
                     Authorization: `Zoho-oauthtoken ${token}`
@@ -29,28 +29,24 @@ async function testTransferOrders() {
 
         const orders = response.data.transfer_orders || [];
 
-        console.log("API Status: SUCCESS");
-        console.log("Total orders returned:", orders.length);
+        console.log("Transfer Orders API: SUCCESS");
+        console.log("Orders found:", orders.length);
 
         console.table(
             orders.map(order => ({
-                transferOrderNo: order.transfer_order_number,
+                number: order.transfer_order_number,
                 date: order.date,
-                transferOrderId: order.transfer_order_id,
-                inTransit: order.is_intransit_order
+                from: order.from_location_name,
+                to: order.to_location_name,
+                id: order.transfer_order_id
             }))
         );
-
     } catch (error) {
-        console.log("API Status: FAILED");
-        console.log("HTTP Status:", error.response?.status || "N/A");
+        console.log("Transfer Orders API: FAILED");
+        console.log("HTTP status:", error.response?.status || "N/A");
         console.log(
-            "Error details:",
-            JSON.stringify(
-                error.response?.data || error.message,
-                null,
-                2
-            )
+            "Error:",
+            JSON.stringify(error.response?.data || error.message, null, 2)
         );
     }
 }
