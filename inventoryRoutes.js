@@ -42,8 +42,20 @@ async function zohoGet(url, params = {}) {
   return response.data;
 }
 function handleError(res, err) {
-  console.error('Inventory module error:', err.response?.data?.message || err.message);
-  res.status(err.status || err.response?.status || 500).json({ success: false, message: err.response?.data?.message || err.message || 'Inventory request failed' });
+  console.error(
+    'Inventory module error:',
+    JSON.stringify(err.response?.data || err.message)
+  );
+
+  res.status(err.status || err.response?.status || 500).json({
+    success: false,
+    message:
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'Inventory request failed',
+    details: err.response?.data || null
+  });
 }
 
 module.exports = function createInventoryRouter({ checkAdmin }) {
