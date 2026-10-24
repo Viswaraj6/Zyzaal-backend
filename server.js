@@ -4504,6 +4504,57 @@ app.get("/admin/test-transfer-orders", checkAdmin, async (req, res) => {
     }
 });
 
+// TEST: GET SINGLE TRANSFER ORDER DETAILS
+app.get("/admin/test-transfer-order/:id", checkAdmin, async (req, res) => {
+    try {
+        const { getAccessToken } = require("./zoho");
+        const axios = require("axios");
+
+        const token = await getAccessToken();
+        const organizationId = process.env.ZOHO_ORGANIZATION_ID;
+        const transferOrderId = req.params.id;
+
+        if (!organizationId) {
+            return res.status(500).json({
+                success: false,
+                message: "ZOHO_ORGANIZATION_ID is missing"
+            });
+        }
+
+        const response = await axios.get(
+            `https://www.zohoapis.in/inventory/v1/transferorders/${transferOrderId}`,
+            {
+                params: {
+                    organization_id: organizationId
+                },
+                headers: {
+                    Authorization: `Zoho-oauthtoken ${token}`
+                },
+                timeout: 20000
+            }
+        );
+
+        res.json({
+            success: true,
+            transferOrder: response.data.transfer_order
+        });
+
+    } catch (error) {
+        console.error(
+            "Transfer Order detail test failed:",
+            error.response?.data || error.message
+        );
+
+        res.status(error.response?.status || 500).json({
+            success: false,
+            status: error.response?.status || 500,
+            message:
+                error.response?.data?.message ||
+                "Failed to fetch Transfer Order details"
+        });
+    }
+});
+  
 app.post("/sync-sales", checkAdmin, async (req, res) => {
 
     try {
