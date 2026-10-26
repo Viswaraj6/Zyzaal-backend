@@ -73,7 +73,11 @@ module.exports = function createInventoryRouter({ checkAdmin }) {
         transferOrderId: String(o.transfer_order_id), transferOrderNo: o.transfer_order_number,
         date: o.date, status: o.status, fromStore: o.from_location_name || '', toStore: o.to_location_name || '',
         fromLocationId: String(o.from_location_id || ''), toLocationId: String(o.to_location_id || ''),
-        totalQuantity: Number(o.total_quantity || 0)
+       totalQuantity: Number(
+  o.total_quantity ??
+  o.quantity_transfer ??
+  0
+)
       }));
       res.json({ success: true, page, perPage, orders });
     } catch (err) { handleError(res, err); }
