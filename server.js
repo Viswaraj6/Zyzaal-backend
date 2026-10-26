@@ -4491,12 +4491,13 @@ app.get("/admin/test-transfer-orders", checkAdmin, async (req, res) => {
 
         res.json({
             success: true,
-            totalOrders: (response.data.transfer_orders || []).length,
-            orders: (response.data.transfer_orders || []).map(order => ({
-                transferOrderNo: order.transfer_order_number,
-                transferOrderId: order.transfer_order_id,
-                date: order.date
-            }))
+            totalorders: (response.data.transfer_orders || []).map(order => ({
+    transferOrderNo: order.transfer_order_number,
+    transferOrderId: order.transfer_order_id,
+    date: order.date,
+    status: order.status,
+    quantity: Number(order.total_quantity || 0)
+}))
         });
 
     } catch (error) {
